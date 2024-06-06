@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="CSS/styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>SmartLink Analytics</title>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">SmartLink <span class="span-logo">Analytics</span></div>
+            <div class="profile">
+                <div class="profile-circle" onclick="toggleMenu()"><img src="IMG/descarga.png" alt=""></div>
+                <div class="dropdown-content" id="subDropdown">
+                    <div class="sub-dropdown-content">
+                        <div class="user-info">
+                            <img src="IMG/descarga.png" alt="" class="img">
+                            <h3>Santiago Marmol Julio</h3>
+                        </div>
+                        <hr>
+                        <a href="Layout/Login/Login.html" class="sub-dropdown-link">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <p>Cerrar Sesion</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="sidebar-link">
+                    <i class="fa-solid fa-folder"></i>
+                    <a href="#">ECO-739-044</a>
+                    <span class="submenu-indicator">&#9656;</span>
+                    <ul class="submenu">
+                        <li><i class="fa-solid fa-city"></i><a href="#">Smart Eléctrica</a></li>
+                        <li><i class="fa-solid fa-city"></i><a href="#">Smart 3D</a></li>
+                        <li><i class="fa-solid fa-city"></i><a href="#">Smart Instrumentation</a></li>
+                        <li><i class="fa-solid fa-city"></i><a href="#">Smart PID</a></li>
+                    </ul>
+                </li>
+                <li class="sidebar-link">
+                    <i class="fa-solid fa-folder"></i>
+                    <a href="#">ECO-739-043</a>
+                    <span class="submenu-indicator">&#9656;</span>
+                    <ul class="submenu">
+                        <li><i class="fa-solid fa-city"></i><a href="#">Smart Eléctrica</a></li>
+                        <li><i class="fa-solid fa-city"></i><a href="#">Smart 3D</a></li>
+                        <li><i class="fa-solid fa-city"></i><a href="#">Smart Instrumentation</a></li>
+                        <li><i class="fa-solid fa-city"></i><a href="#">Smart PID</a></li>
+                    </ul>
+                </li>
+                <li class="sidebar-link">
+                    <i class="fa-solid fa-folder"></i>
+                    <a href="#">CEN-363-04</a>
+                    <span class="submenu-indicator">&#9656;</span>
+                    <ul class="submenu">
+                        <li><i class="fa-solid fa-city"></i><a href="#">Smart Eléctrica</a></li>
+                        <li><i class="fa-solid fa-city"></i><a href="#">Smart 3D</a></li>
+                        <li><i class="fa-solid fa-city"></i><a href="#">Smart Instrumentation</a></li>
+                        <li><i class="fa-solid fa-city"></i><a href="#">Smart PID</a></li>
+                    </ul>
+                </li>
+                <li class="sidebar-link">
+                    <i class="fa-solid fa-folder"></i>
+                    <a href="#">CEN-364-05</a>
+                    <span class="submenu-indicator">&#9656;</span>
+                    <ul class="submenu">
+                        <li><i class="fa-solid fa-city"></i><a href="#">Smart Eléctrica</a></li>
+                        <li><i class="fa-solid fa-city"></i><a href="#">Smart 3D</a></li>
+                        <li><i class="fa-solid fa-city"></i><a href="#">Smart Instrumentation</a></li>
+                        <li><i class="fa-solid fa-city"></i><a href="#">Smart PID</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+
+        <div class="main">
+            <div class="main-title">
+                <h2>Reporte de consistencia</h2>
+                <button class="generar-reporte-btn">Generar Reporte</button>
+            </div>
+            <div class="reporte">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Edad</th>
+                            <th>Correo Electrónico</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>John Doe</td>
+                            <td>30</td>
+                            <td>john.doe@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>Jane Smith</td>
+                            <td>25</td>
+                            <td>jane.smith@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>Michael Johnson</td>
+                            <td>40</td>
+                            <td>michael.johnson@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>Michael Johnson</td>
+                            <td>40</td>
+                            <td>michael.johnson@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>Michael Johnson</td>
+                            <td>40</td>
+                            <td>michael.johnson@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>Michael Johnson</td>
+                            <td>40</td>
+                            <td>michael.johnson@example.com</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+        
+    </div>
+
+<script src="JS/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartLink Analytics</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='CSS/login.css') }}">
+    <!-- Font Awesome CDN Link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <div class="container" id="container">
+        <div class="form-container sign-up">
+            <form action="/registro" method="post" id="miFormulario">
+                <h1>Crear Cuenta</h1>
+                <span>Usa tu correo electrónico para registrarte</span>
+                <input type="text" placeholder="Nombre" name="nombre" required>
+                <input type="text" placeholder="Apellido" name="apellido" required>
+                <input type="email" placeholder="Correo" name="correo" required>
+                <input type="password" placeholder="Contraseña" name="contraseña" required>
+                <input type="password" placeholder="Confirmar Contraseña" name="conf_contraseña" required>
+                <br>
+                <button>Registrarse</button>
+            </form>
+        </div>
+        <div class="form-container sign-in">
+            <form action="/" method="post">
+                <h1>Inicio sesión</h1>
+                <input type="email" placeholder="Email" name="email" required>
+                <input type="password" placeholder="Contraseña" name="password" required>
+                <button>Iniciar sesión</button>
+            </form>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>¿Ya tienes cuenta?</h1>
+                    <p>Inicia sesion para utilizar todas las funciones del sitio</p>
+                    <button id="login">Iniciar sesion</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>¿No tienes cuenta?</h1>
+                    <p>ingrese aqui sus datos parea crear una</p>
+                    <button id="register">crear cuenta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <script>
+                Swal.fire({
+                    icon: '{{ category }}',
+                    title: '{{ category.capitalize() }}',
+                    text: '{{ message }}'
+                });
+            </script>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+
+    <script>
+        
+    </script>
+    <script src="{{ url_for('static', filename='JS/main.js') }}"></script>
+    
+</body>
+
+</html>

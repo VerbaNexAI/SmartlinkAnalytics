@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='CSS/styles.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+    <title>SmartLink Analytics</title>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">SmartLink <span class="span-logo">Analytics</span></div>
+            <div class="profile">
+                <div class="profile-circle" onclick="toggleMenu()"><img src="{{ url_for('static', filename='image/descarga.png') }}" alt=""></div>
+                <div class="dropdown-content" id="subDropdown">
+                    <div class="sub-dropdown-content">
+                        <div class="user-info">
+                            <img src="{{ url_for('static', filename='image/descarga.png')}}" alt="" class="img">
+                            {% if nombre and apellido %}
+                            <h3>{{ nombre }} {{ apellido }}</h3>
+                            {% endif %}
+
+
+                        </div>
+                        <hr>
+                        <a href="/perfil" class="sub-dropdown-link">
+                            <i class="fa-solid fa-user"></i>
+                            <p>Perfil</p>
+                        </a>
+                        <a href="/logout" class="sub-dropdown-link">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <p>Cerrar Sesion</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="sidebar-link">
+                    <i class="fa-solid fa-folder"></i>
+                    <a href="#">PROYECTOS ACTIVOS</a>
+                    <span class="submenu-indicator">&#9656;</span>
+         <ul class="submenu" id="data-list">
+                        <!-- Lista de proyectos activos -->
+                    </ul>
+                    <div class="pagination" id="pagination-activos">
+                        <button id="prev-activos">Anterior</button>
+                        <button id="next-activos">Siguiente</button>
+                    </div>
+                </li>
+                <li class="sidebar-link">
+                    <i class="fa-solid fa-folder"></i>
+                    <a href="#">PROYECTOS INACTIVOS</a>
+                    <span class="submenu-indicator">&#9656;</span>
+                    <ul class="submenu" id="data_list_inactive">
+                      
+                    </ul>
+
+                    <div class="pagination" id="pagination-inactivos">
+                        <button id="prev-inactivos">Anterior</button>
+                        <button id="next-inactivos">Siguiente</button>
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+
+        <div class="main">
+            <div class="main-title">
+                <h2>Data Table</h2>
+                <button class="generar-reporte-btn" onclick="ExportToExcel('xlsx')">Generar Reporte</button>
+            </div>
+            <div class="reporte">
+                <div class="table-container">
+                    <table id="myTable">
+                        <!-- Add more rows as needed -->
+                    </table>
+                </div>
+z
+   
+
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='JS/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='JS/fech.js') }}"></script>
+    <script src="{{ url_for('static', filename='JS/main.js') }}"></script>
+</body>
+
+</html>
