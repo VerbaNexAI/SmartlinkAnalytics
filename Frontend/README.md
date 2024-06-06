@@ -17,7 +17,7 @@ Smartlink Analytics es una innovadora herramienta diseñada para asegurar la con
 
 ### 📬 Contacto
 Para cualquier consulta o sugerencia, no dudes en contactar con nosotros:
-* 📧 Email: jeison.jimenez@seringtec.com
+* 📧 Email: epuerta@utb.edu.co | jeison.jimenez@seringtec.com
 
 ### 📜 Licencia
 Este proyecto está bajo la Licencia MIT. Consulta el archivo LICENSE para más detalles.
