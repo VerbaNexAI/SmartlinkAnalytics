@@ -231,6 +231,7 @@ max-height: 400px;
     padding: 10px 20px;
     border-radius: 10px;
     margin-top: 20px;
+    overflow: hidden; /* Para asegurar que cualquier contenido que sobresalga se gestione correctamente */
 }
 
 .main-title {
@@ -253,9 +254,15 @@ max-height: 400px;
     margin: 0 20px;
 }
 
+.table-container{
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
 .reporte table {
     width: 100%;
     border-collapse: collapse;
+    
 }
 
 .reporte th, .reporte td {
@@ -292,6 +299,7 @@ max-height: 400px;
 .generar-reporte-btn:hover {
     background-color: #0056b3; 
 }
+
 
 /* Estilos main */
 

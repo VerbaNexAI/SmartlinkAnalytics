@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SmartLink Analytics</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='CSS/login.css') }}">
-    <!-- Font Awesome CDN Link -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -40,37 +39,32 @@
             <div class="toggle">
                 <div class="toggle-panel toggle-left">
                     <h1>¿Ya tienes cuenta?</h1>
-                    <p>Inicia sesion para utilizar todas las funciones del sitio</p>
-                    <button id="login">Iniciar sesion</button>
+                    <p>Inicia sesión para utilizar todas las funciones del sitio</p>
+                    <button id="login">Iniciar sesión</button>
                 </div>
                 <div class="toggle-panel toggle-right">
                     <h1>¿No tienes cuenta?</h1>
-                    <p>ingrese aqui sus datos parea crear una</p>
-                    <button id="register">crear cuenta</button>
+                    <p>Ingrese aquí sus datos para crear una</p>
+                    <button id="register">Crear cuenta</button>
                 </div>
             </div>
         </div>
     </div>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <script>
-                Swal.fire({
-                    icon: '{{ category }}',
-                    title: '{{ category.capitalize() }}',
-                    text: '{{ message }}'
-                });
-            </script>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
-
-
     <script>
-        
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('container');
+            const registerBtn = document.getElementById('register');
+            const loginBtn = document.getElementById('login');
+
+            registerBtn.addEventListener('click', () => {
+                container.classList.add("active");
+            });
+
+            loginBtn.addEventListener('click', () => {
+                container.classList.remove("active");
+            });
+        });
     </script>
-    <script src="{{ url_for('static', filename='JS/main.js') }}"></script>
-    
 </body>
 
 </html>
