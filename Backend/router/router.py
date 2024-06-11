@@ -76,25 +76,45 @@ async def get_inactive_projects():
 
     return unique_projects
 
+# Endpoint to get views
 @router.post("/api/view")
 async def post_project_content(project: ProjectContent) -> List[dict]:
-    # Imprimir los datos recibidos
+    # Print the received data
     print(f"Project: {project.project}")
     print(f"Tool: {project.tool}")
 
-    # Get active projects data
-    projects_data = get_active_projects()
+    connection = connect_db()
+    if not connection:
+        raise HTTPException(
+            status_code=500, detail="Could not connect to the database"
+        )
 
-    # Find matching project
-    matching_project = None
-    for proj in projects_data:
-        if project.project in proj["PROYECTO"]:
-            matching_project = proj
-            break
+    cursor = connection.cursor()
+    try:
+        # Run the query to get active projects that match the specific pattern
+        cursor.execute("""
+            SELECT [PROYECTO], [ID], [FECHA-CREACION], [ESTADO]
+            FROM [ODS].[dbo].['NOMBRES-PROYECTOS-2D$']
+            WHERE [PROYECTO] LIKE ?
+              AND [PROYECTO] LIKE ?
+              AND [PROYECTO] LIKE ?
+              AND [ESTADO] = 'activo';
+        """, (f'%{project.tool}%', f'%{project.project}%', '%_SDB'))
+        rows = cursor.fetchall()
+        columns = [column[0] for column in cursor.description]
+        projects = [dict(zip(columns, row)) for row in rows]
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error executing the query: {str(e)}"
+        )
+    finally:
+        cursor.close()
+        connection.close()
 
-    if matching_project:
-        print(f"Project found: {matching_project}")
+    if projects:
+        print(f"Projects found: {projects}")
 
+        # Connect again to run the additional query
         connection = connect_db()
         if not connection:
             raise HTTPException(
@@ -102,9 +122,9 @@ async def post_project_content(project: ProjectContent) -> List[dict]:
             )
         cursor = connection.cursor()
         try:
-            # Aquí puedes utilizar tanto el proyecto como la herramienta en tu lógica de negocio
+            # Run the query to check and create the view if necessary
             cursor.execute("""
-                DECLARE @nombreVista NVARCHAR(128) = 'Vistas';
+                DECLARE @nombreVista NVARCHAR(128) = 'T_History';
                 DECLARE @sql NVARCHAR(MAX);
 
                 IF EXISTS (SELECT 1 FROM sys.views WHERE name = @nombreVista)
@@ -115,7 +135,7 @@ async def post_project_content(project: ProjectContent) -> List[dict]:
                 ELSE
                 BEGIN
                     EXEC sp_executesql N'
-                    CREATE VIEW dbo.Vistas AS
+                    CREATE VIEW dbo.T_History AS
                     SELECT dbo.Clientes.Nombre, dbo.Clientes.ClienteID, dbo.Pedidos.PedidoID, dbo.Pedidos.Fecha, dbo.Pedidos.Monto
                     FROM dbo.Clientes
                     INNER JOIN dbo.Pedidos ON dbo.Clientes.ClienteID = dbo.Pedidos.ClienteID';
@@ -137,5 +157,5 @@ async def post_project_content(project: ProjectContent) -> List[dict]:
 
         return result
     else:
-        print(f"Project not found for: {project.project}")
-        raise HTTPException(status_code=404, detail="Project not found")
+        print(f"No projects found for tool: {project.tool} and project: {project.project}")
+        raise HTTPException(status_code=404, detail="No projects found")
