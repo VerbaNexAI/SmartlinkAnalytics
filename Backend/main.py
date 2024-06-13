@@ -14,7 +14,6 @@ app.add_middleware(
 
 app.include_router(router)
 
-# Iniciar el servidor
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app)

@@ -69,16 +69,6 @@ def registro():
     print("Redireccionando al menú principal...")
     return redirect(url_for('menu'))
 
-
-
-# Ruta para cerrar sesión
-@app.route('/logout')
-def logout():
-    # Eliminar la sesión del usuario
-    session.pop('usuario', None)
-    return redirect(url_for('login'))
-
-# Ruta para el menú después de iniciar sesión
 @app.route('/menu')
 def menu():
     # Verificar si el usuario ha iniciado sesión
@@ -91,7 +81,74 @@ def menu():
     apellido = datos_sesion['apellido']
 
     # Renderizar la página del menú
+    return render_template('menu.html', nombre=nombre, apellido=apellido)
+
+@app.route('/spid')
+def spid():
+    # Verificar si el usuario ha iniciado sesión
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
+    # Recuperar los datos de la sesión
+    datos_sesion = session['usuario']
+    nombre = datos_sesion['nombre']
+    apellido = datos_sesion['apellido']
+
+    # Renderizar la página del menú
     return render_template('index.html', nombre=nombre, apellido=apellido)
+
+@app.route('/sel')
+def sel():
+    # Verificar si el usuario ha iniciado sesión
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
+    # Recuperar los datos de la sesión
+    datos_sesion = session['usuario']
+    nombre = datos_sesion['nombre']
+    apellido = datos_sesion['apellido']
+
+    # Renderizar la página del menú
+    return render_template('sel.html', nombre=nombre, apellido=apellido)
+
+@app.route('/spi')
+def spi():
+    # Verificar si el usuario ha iniciado sesión
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
+    # Recuperar los datos de la sesión
+    datos_sesion = session['usuario']
+    nombre = datos_sesion['nombre']
+    apellido = datos_sesion['apellido']
+
+    # Renderizar la página del menú
+    return render_template('spi.html', nombre=nombre, apellido=apellido)
+    
+@app.route('/s3d')
+def s3d():
+    # Verificar si el usuario ha iniciado sesión
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
+    # Recuperar los datos de la sesión
+    datos_sesion = session['usuario']
+    nombre = datos_sesion['nombre']
+    apellido = datos_sesion['apellido']
+
+    # Renderizar la página del menú
+    return render_template('s3d.html', nombre=nombre, apellido=apellido)
+
+
+# Ruta para cerrar sesión
+@app.route('/logout')
+def logout():
+    # Eliminar la sesión del usuario
+    session.pop('usuario', None)
+    return redirect(url_for('login'))
+
+# Ruta para el menú después de iniciar sesión
+
 
 if __name__ == '__main__':
     app.run(debug=True)

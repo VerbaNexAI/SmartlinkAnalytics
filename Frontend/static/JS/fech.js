@@ -24,14 +24,8 @@ const handleResponse = (response, element, paginationId) => {
             const text = document.createTextNode(` ${item.PROYECTO}`);
             listItem.appendChild(text);
             listItem.addEventListener('click', () => {
-                toggleSubList(item, listItem);
+                sendPostRequest(item.PROYECTO); // Enviar solo el nombre del proyecto
             });
-
-            // Crear un submenú para este proyecto
-            const subList = document.createElement('ul');
-            subList.className = 'submenu';
-            subList.style.display = 'none'; // Oculto por defecto
-            listItem.appendChild(subList);
 
             return listItem;
         });
@@ -40,13 +34,13 @@ const handleResponse = (response, element, paginationId) => {
 };
 
 // Enviar solicitud POST
-const sendPostRequest = (project, tool) => {
+const sendPostRequest = (project) => {
     fetch(postUrl, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ project: project, tool: tool }),
+        body: JSON.stringify({ project: project }),
     })
     .then(response => {
         if (!response.ok) {
@@ -82,33 +76,6 @@ const renderTable = (data) => {
         }
         table.appendChild(row);
     });
-};
-
-// Función para mostrar u ocultar la sublista
-const toggleSubList = (item, listItem) => {
-    const subList = listItem.querySelector('ul.submenu');
-    if (subList.style.display === 'none') {
-        showSubList(subList, item.PROYECTO);
-    } else {
-        subList.style.display = 'none';
-    }
-};
-
-// Mostrar sublista
-const showSubList = (subList, projectName) => {
-    const subItems = ['SPID', 'SEL', 'SPI'];
-    subList.innerHTML = ''; // Limpiar la lista anterior
-    subItems.forEach(subItem => {
-        const listItem = document.createElement('li');
-        listItem.textContent = subItem;
-        listItem.addEventListener('click', (event) => {
-            event.stopPropagation(); // Evitar que el clic en el subitem cierre la lista
-            console.log(`Clicked on ${subItem} for project ${projectName}`);
-            sendPostRequest(projectName, subItem); // Enviar el proyecto y la herramienta
-        });
-        subList.appendChild(listItem);
-    });
-    subList.style.display = 'block'; // Mostrar la sublista
 };
 
 // Fetch datos activos

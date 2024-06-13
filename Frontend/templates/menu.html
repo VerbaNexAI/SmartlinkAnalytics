@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Perfil - SmartLink Analytics{% endblock %}
+
+{% block content %}
+
+        <div class="main">
+            <div class="contenedor">
+                <a href="/spid">
+                    <div class="card">
+                        <div class="card-header">
+                            <img src="{{ url_for('static', filename='image/imagen (7).png')}}" alt="VMW">
+                        </div>
+                        <div class="card-body">
+                            <h2 class="card-title">SPID</h2>
+                        </div>
+                    </div>
+                </a>
+                <a href="/sel">
+                    <div class="card">
+                        <div class="card-header">
+                            <img src="{{ url_for('static', filename='image/imagen (11).png')}}" alt="VMW">
+                        </div>
+                        <div class="card-body">
+                            <h2 class="card-title">SEL</h2>
+                        </div>
+                    </div>
+                </a>
+                <a href="/spi">
+                    <div class="card">
+                        <div class="card-header">
+                            <img src="{{ url_for('static', filename='image/imagen (10).png')}}" alt="VMW">
+                        </div>
+                        <div class="card-body">
+                            <h2 class="card-title">SPI</h2>
+                        </div>
+                    </div>
+                </a>
+                <a href="/s3d">
+                    <div class="card">
+                        <div class="card-header">
+                            <img src="{{ url_for('static', filename='image/imagen (9).png')}}" alt="VMW">
+                        </div>
+                        <div class="card-body">
+                            <h2 class="card-title">S3D</h2>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+{% endblock %}

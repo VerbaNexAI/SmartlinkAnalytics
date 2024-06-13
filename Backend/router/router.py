@@ -11,17 +11,6 @@ router = APIRouter()
 # Define the model for project content
 class ProjectContent(BaseModel):
     project: str
-    tool: str
-
-# Function to process project names
-def process_string(string):
-    # Remove the "_SDB" suffix if present
-    without_sdb = re.sub(r"_SDB$", "", string)
-    # Search for a substring starting with "ECO"
-    eco = re.search(r"ECO.*", without_sdb)
-    if eco:
-        return eco.group(0)
-    return without_sdb
 
 # Root endpoint
 @router.get("/")
@@ -36,10 +25,6 @@ async def get_projects():
         projects = get_active_projects()
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-    # Process project names
-    for project in projects:
-        project["PROYECTO"] = process_string(project["PROYECTO"])
 
     # Filter unique projects
     unique_projects = []
@@ -61,10 +46,6 @@ async def get_inactive_projects():
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-    # Process project names
-    for project in projects:
-        project["PROYECTO"] = process_string(project["PROYECTO"])
-
     # Filter unique projects
     unique_projects = []
     seen_projects = set()
@@ -79,9 +60,7 @@ async def get_inactive_projects():
 # Endpoint to get views
 @router.post("/api/view")
 async def post_project_content(project: ProjectContent) -> List[dict]:
-    # Print the received data
     print(f"Project: {project.project}")
-    print(f"Tool: {project.tool}")
 
     connection = connect_db()
     if not connection:
@@ -91,15 +70,12 @@ async def post_project_content(project: ProjectContent) -> List[dict]:
 
     cursor = connection.cursor()
     try:
-        # Run the query to get active projects that match the specific pattern
         cursor.execute("""
-            SELECT [PROYECTO], [ID], [FECHA-CREACION], [ESTADO]
-            FROM [ODS].[dbo].['NOMBRES-PROYECTOS-2D$']
-            WHERE [PROYECTO] LIKE ?
-              AND [PROYECTO] LIKE ?
-              AND [PROYECTO] LIKE ?
-              AND [ESTADO] = 'activo';
-        """, (f'%{project.tool}%', f'%{project.project}%', '%_SDB'))
+                SELECT [PROYECTO], [ID], [FECHA-CREACION], [ESTADO]
+                FROM [ODS].[dbo].['NOMBRES-PROYECTOS-2D$']
+                WHERE [PROYECTO] = ? 
+                AND [ESTADO] = 'activo';
+        """, (project.project,))
         rows = cursor.fetchall()
         columns = [column[0] for column in cursor.description]
         projects = [dict(zip(columns, row)) for row in rows]
@@ -114,7 +90,6 @@ async def post_project_content(project: ProjectContent) -> List[dict]:
     if projects:
         print(f"Projects found: {projects}")
 
-        # Connect again to run the additional query
         connection = connect_db()
         if not connection:
             raise HTTPException(
@@ -122,9 +97,8 @@ async def post_project_content(project: ProjectContent) -> List[dict]:
             )
         cursor = connection.cursor()
         try:
-            # Run the query to check and create the view if necessary
             cursor.execute("""
-                DECLARE @nombreVista NVARCHAR(128) = 'T_History';
+                DECLARE @nombreVista NVARCHAR(128) = 'Vistas';
                 DECLARE @sql NVARCHAR(MAX);
 
                 IF EXISTS (SELECT 1 FROM sys.views WHERE name = @nombreVista)
@@ -135,7 +109,7 @@ async def post_project_content(project: ProjectContent) -> List[dict]:
                 ELSE
                 BEGIN
                     EXEC sp_executesql N'
-                    CREATE VIEW dbo.T_History AS
+                    CREATE VIEW dbo.Vistas AS
                     SELECT dbo.Clientes.Nombre, dbo.Clientes.ClienteID, dbo.Pedidos.PedidoID, dbo.Pedidos.Fecha, dbo.Pedidos.Monto
                     FROM dbo.Clientes
                     INNER JOIN dbo.Pedidos ON dbo.Clientes.ClienteID = dbo.Pedidos.ClienteID';
@@ -157,5 +131,12 @@ async def post_project_content(project: ProjectContent) -> List[dict]:
 
         return result
     else:
-        print(f"No projects found for tool: {project.tool} and project: {project.project}")
-        raise HTTPException(status_code=404, detail="No projects found")
+        print(f"Project not found for: {project.project}")
+        raise HTTPException(status_code=404, detail="Project not found")
+
+
+
+@router.post("/uploadfile/")
+async def upload_file(file: UploadFile = File(...)):
+    contents = await file.read()
+    return FileResponse(BytesIO(contents), media_type='image/jpeg', filename=file.filename)
