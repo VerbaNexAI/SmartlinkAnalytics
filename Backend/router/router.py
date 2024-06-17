@@ -1,9 +1,14 @@
 import re
-from fastapi import APIRouter, HTTPException
+import cv2
+from fastapi import APIRouter, HTTPException,File, UploadFile
+from fastapi.responses import FileResponse
 from config.db import connect_db
 from pydantic import BaseModel
 from model.projects import get_active_projects, get_inactive_projects_from_db
+from ultralytics import YOLO
 from typing import List
+import shutil
+import os
 
 # Create a FastAPI router instance
 router = APIRouter()
@@ -136,7 +141,37 @@ async def post_project_content(project: ProjectContent) -> List[dict]:
 
 
 
-@router.post("/uploadfile/")
-async def upload_file(file: UploadFile = File(...)):
-    contents = await file.read()
-    return FileResponse(BytesIO(contents), media_type='image/jpeg', filename=file.filename)
+
+
+@router.post("/upload-image")
+async def upload_image(file: UploadFile = File(...)):
+    # Define the path to save the uploaded file
+    upload_folder = os.getenv('UPLOAD_FOLDER')
+    os.makedirs(upload_folder, exist_ok=True)  # Create the folder if it doesn't exist
+
+    # Create the full path for the uploaded file
+    file_path = os.path.join(upload_folder, file.filename)
+
+
+
+    # Save the uploaded file
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    print ("filename", file.filename, "\n", "file_path", file_path)
+
+
+
+
+    model_path = r'model\best.pt'
+    model = YOLO(model_path)
+    img = cv2.imread(file_path)
+
+    predict = model.predict(img)[0]
+    predict = predict.plot()
+
+    output_path = os.path.join(r"C:\Users\santiago.marmol\Desktop\SmarkLink-Api\SmartlinkAnalytics\Backend", file.filename)
+    print(output_path)
+    cv2.imwrite(output_path, predict)
+
+    return {"filename": file.filename, "file_path": file_path}
+

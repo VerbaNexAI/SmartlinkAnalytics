@@ -208,12 +208,16 @@
                             <span class="fa fa-sync-alt"></span>
                         </span>
                     </button>
-                    <label class="btn btn-primary btn-upload" for="inputImage" title="Upload image file">
-                        <input type="file" class="sr-only" id="inputImage" name="file" accept="image/*">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="Import image with Blob URLs">
-                            <span class="fa fa-upload"></span>
-                        </span>
-                    </label>
+                    <form id="imageUploadForm" action="/upload-image/" method="post" enctype="multipart/form-data">
+                        <label class="btn btn-primary btn-upload" for="inputImage" title="Upload image file">
+                            <input type="file" class="sr-only" id="inputImage" name="file" accept="image/*">
+                            <span class="docs-tooltip" data-toggle="tooltip" title="Import image with Blob URLs">
+                                <span class="fa fa-upload"></span> Seleccione una imagen
+                            </span>
+                        </label>
+                    </form>
+                    
+                    
                     <button type="button" class="btn btn-primary" data-method="destroy" title="Destroy">
                         <span class="docs-tooltip" data-toggle="tooltip" title="cropper.destroy()">
                             <span class="fa fa-power-off"></span>
@@ -340,5 +344,32 @@
         </div><!-- /.docs-toggles -->
     </div>
 </div>
+
+<script>
+    document.getElementById('inputImage').addEventListener('change', function() {
+        var formData = new FormData();
+        formData.append('file', this.files[0]);
+
+        fetch('http://127.0.0.1:8000/upload-image', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            // Manejar la respuesta como sea necesario
+            console.log('Imagen cargada exitosamente:', blob);
+        })
+        .catch(error => {
+            console.error('Hubo un problema al cargar la imagen:', error);
+        });
+    });
+</script>
+
+
 
 {% endblock %}
