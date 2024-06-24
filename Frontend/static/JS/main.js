@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const sidebarLinks = document.querySelectorAll('.sidebar-link');
     const submenus = document.querySelectorAll('.submenu');
-    const paginationActivos = document.getElementById('pagination-activos');
-    const paginationInactivos = document.getElementById('pagination-inactivos');
     
     sidebarLinks.forEach(link => {
         link.addEventListener('click', function (event) {

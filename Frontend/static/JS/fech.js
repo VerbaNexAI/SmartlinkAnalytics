@@ -5,7 +5,7 @@ const postUrl = 'http://127.0.0.1:8000/api/view';
 
 // Elementos del DOM
 const dataList = document.getElementById('data-list');
-const dataListInactivos = document.getElementById('data-list-inactivos');
+const dataListInactivos = document.getElementById('data_list_inactive');
 const table = document.getElementById('myTable');
 const itemsPerPage = 10; 
 
@@ -80,7 +80,7 @@ const renderTable = (data) => {
 
 // Fetch datos activos
 fetch(apiUrl)
-    .then(response => handleResponse(response, dataList, 'activos'))
+    .then(response => handleResponse(response, dataList, 'active'))
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
         const errorItem = document.createElement('li');
@@ -91,7 +91,7 @@ fetch(apiUrl)
 
 // Fetch datos inactivos
 fetch(apiUrlInactivos)
-    .then(response => handleResponse(response, dataListInactivos, 'inactivos'))
+    .then(response => handleResponse(response, dataListInactivos, 'inactive'))
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
         const errorItem = document.createElement('li');

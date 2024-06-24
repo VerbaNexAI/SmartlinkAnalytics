@@ -1,6 +1,13 @@
 import pyodbc
 from fastapi import HTTPException
 from config.db import connect_db
+from typing import List, Dict
+
+def read_sql_file(file_path):
+    """Reads the contents of a SQL file."""
+    with open(file_path, 'r') as file:
+        return file.read()
+
 
 def get_active_projects():
     """Retrieve active projects from the database."""
@@ -12,15 +19,11 @@ def get_active_projects():
 
     cursor = connection.cursor()
     try:
-        # Execute the query to get active projects
-        cursor.execute("""
-
-            SELECT [PROYECTO], [ID], [FECHA-CREACION], [ESTADO]
-            FROM [ODS].[dbo].['NOMBRES-PROYECTOS-2D$']
-            WHERE [ESTADO] = 'activo' 
-            AND [PROYECTO] LIKE 'SPID%SDB';
-
-        """)
+        # Leer el archivo .sql
+        sql_query = read_sql_file(r'config\data\project-active.sql')
+        
+        # Ejecutar la consulta desde el archivo .sql
+        cursor.execute(sql_query)
         rows = cursor.fetchall()
         columns = [column[0] for column in cursor.description]
         projects = [dict(zip(columns, row)) for row in rows]
@@ -45,18 +48,11 @@ async def get_inactive_projects_from_db():
 
         cursor = connection.cursor()
         try:
-            # Execute the query to get inactive projects
-            cursor.execute("""
-                SELECT [PROYECTO], [ID], [FECHA-CREACION], [ESTADO]
-                FROM [ODS].[dbo].['NOMBRES-PROYECTOS-2D$']
-                WHERE [PROYECTO] NOT LIKE '%master%'
-                AND [PROYECTO] NOT LIKE '%tempdb%'
-                AND [PROYECTO] NOT LIKE '%model%'
-                AND [PROYECTO] NOT LIKE '%msdb%'
-                AND [PROYECTO] NOT LIKE '%CAS05%'
-                AND [PROYECTO] LIKE 'SPID%SDB'
-                AND [ESTADO] = 'inactivo';
-            """)
+            # Leer el archivo .sql
+            sql_query = read_sql_file(r'config\data\project-inactve.sql')
+            
+            # Ejecutar la consulta desde el archivo .sql
+            cursor.execute(sql_query)
 
             rows = cursor.fetchall()
             columns = [column[0] for column in cursor.description]
@@ -71,3 +67,53 @@ async def get_inactive_projects_from_db():
         )
 
 
+
+def get_project(project_name: str) -> List[Dict]:
+    """Retrieve projects from the database based on project name."""
+    connection = connect_db()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Could not connect to the database")
+    
+    cursor = connection.cursor()
+    try:
+        # Leer el archivo .sql
+        sql_query = read_sql_file(r'config\data\project.sql')
+        
+        # Ejecutar la consulta desde el archivo .sql
+        cursor.execute(sql_query, (project_name,))
+        
+        # Obtener los nombres de las columnas y los resultados
+        columns = [column[0] for column in cursor.description]
+        projects = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        
+        return projects
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error executing the query: {str(e)}")
+    finally:
+        cursor.close()
+        connection.close()
+
+def get_view_data() -> List[Dict]:
+    """Retrieve view data from the database or create the view if it does not exist."""
+    connection = connect_db()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Could not connect to the database")
+    
+    cursor = connection.cursor()
+    try:
+        # Leer el archivo .sql
+        sql_query = read_sql_file(r'config\data\view.sql')
+        
+        # Ejecutar la consulta desde el archivo .sql
+        cursor.execute(sql_query)
+        
+        # Obtener los nombres de las columnas y los resultados
+        column_names = [column[0] for column in cursor.description]
+        result = [dict(zip(column_names, row)) for row in cursor.fetchall()]
+        
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error executing additional query: {str(e)}")
+    finally:
+        cursor.close()
+        connection.close()

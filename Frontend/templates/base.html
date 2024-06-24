@@ -1,78 +1,103 @@
 <!-- base.html -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}SmartLink Analytics{% endblock %}</title>
 
+    <!-- googleFonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+    <!-- fontawesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" crossorigin="anonymous">
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap@4/dist/css/bootstrap.min.css" crossorigin="anonymous">
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/menu.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/cropper.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-          integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"/>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
-          crossorigin="anonymous">
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap@4/dist/css/bootstrap.min.css"
-          crossorigin="anonymous">
 </head>
+
 <body>
-<header class="header">
-    <div class="header-container">
-        <div class="logo">SmartLink <span class="span-logo">Analytics</span></div>
-        <div class="profile">
-            <a href="/menu" class="home-link"><i class="fa-solid fa-house"></i></a>
-            <div class="profile-circle" onclick="toggleMenu()">
-                <img src="{{ url_for('static', filename='image/descarga.png') }}" alt="">
-            </div>
-            <div class="dropdown-content" id="subDropdown">
-                <div class="sub-dropdown-content">
-                    <div class="user-info">
-                        <img src="{{ url_for('static', filename='image/descarga.png') }}" alt="" class="img">
-                        {% if nombre and apellido %}
-                            <h3>{{ nombre }} {{ apellido }}</h3>
-                        {% endif %}
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">SmartLink <span class="span-logo">Analytics</span></div>
+            <div class="profile">
+                <a href="/menu" class="home-link"><i class="fa-solid fa-house"></i></a>
+                <div class="profile-circle" onclick="toggleMenu()">
+                    <img src="{{ url_for('static', filename='image/descarga.png') }}" alt="">
+                </div>
+                <div class="dropdown-content" id="subDropdown">
+                    <div class="sub-dropdown-content">
+                        <div class="user-info">
+                            <img src="{{ url_for('static', filename='image/descarga.png') }}" alt="" class="img">
+                            {% if first_name and last_name %}
+                            <h5>{{ first_name }} {{ last_name }}</h5>
+                            {% endif %}
+                        </div>
+                        <hr>
+                        <a href="/perfil" class="sub-dropdown-link">
+                            <i class="fa-solid fa-user"></i>
+                            <p>Perfil</p>
+                        </a>
+                        <a href="/logout" class="sub-dropdown-link">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <p>Cerrar Sesion</p>
+                        </a>
                     </div>
-                    <hr>
-                    <a href="/perfil" class="sub-dropdown-link">
-                        <i class="fa-solid fa-user"></i>
-                        <p>Perfil</p>
-                    </a>
-                    <a href="/logout" class="sub-dropdown-link">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                        <p>Cerrar Sesion</p>
-                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    {% block content %}
+
+
+
+    {% endblock %}
+    <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Imagen Cargada</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="img-container">
+                        <img id="uploadedImage" alt="Uploaded Image" class="img-fluid">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button id="downloadBtn" type="button" class="btn btn-primary">Descargar</button>
                 </div>
             </div>
         </div>
     </div>
-</header>
 
 
-
-    {% block content %}
-   
-    {% endblock %}
-
-
-    
-<!-- Scripts -->
-<script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
-<script src="{{ url_for('static', filename='JS/main.js') }}"></script>
-<script src="{{ url_for('static', filename='JS/fech.js') }}"></script>
+    <!-- Scripts al final del cuerpo para mejorar la carga -->
+    <script src="https://unpkg.com/jquery@3/dist/jquery.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap@4/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
 
-<script src="https://unpkg.com/jquery@3/dist/jquery.slim.min.js" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/bootstrap@4/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-<script src="https://fengyuanchen.github.io/shared/google-analytics.js" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/cropper.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/cropper_main.js') }}"></script>
 
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/sel.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/spi.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/s3d.js') }}"></script>
 
-<script src="{{ url_for('static', filename='JS/cropper.js') }}"></script>
-<script src="{{ url_for('static', filename='JS/cropper_main.js') }}"></script>
 
 
 </body>
+
 </html>

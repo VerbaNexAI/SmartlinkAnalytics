@@ -2,12 +2,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var uploadedImageURL;
     var cropper;
 
-
-    document.getElementById('inputImage').addEventListener('change', function() {
+    document.getElementById('inputImage-spi').addEventListener('change', function() {
         var formData = new FormData();
         formData.append('file', this.files[0]);
 
-        fetch('http://127.0.0.1:8000/upload-image', {
+        fetch('http://127.0.0.1:8000/upload-image-spi', {
             method: 'POST',
             body: formData
         })
@@ -27,25 +26,24 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             uploadedImage.src = imageUrl;
 
-        
+            
             $('#imageModal').modal('show');
 
-           
             $('#imageModal').on('shown.bs.modal', function () {
                 if (cropper) {
-                    cropper.destroy(); 
+                    cropper.destroy();
                 }
 
                 cropper = new Cropper(uploadedImage, {
-                    viewMode: 1,
+                    viewMode: 1, 
                     responsive: true,
                     zoomOnWheel: true, 
                     cropBoxResizable: true, 
                     toggleDragModeOnDblclick: false, 
-                    movable: true, 
-                    zoomable: true, 
-                    rotatable: true, 
-                    autoCropArea: 0.5, 
+                    movable: true,
+                    zoomable: true,
+                    rotatable: true,
+                    autoCropArea: 0.5,
                     crop: function(event) {
                         var data = event.detail;
                         console.log(data);

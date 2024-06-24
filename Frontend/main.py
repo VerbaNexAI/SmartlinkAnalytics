@@ -2,157 +2,168 @@ from flask import Flask, render_template, redirect, request, url_for, session, f
 import pyodbc
 from config.db import conn_db
 
-
 app = Flask(__name__, static_folder='static')
-app.secret_key = 'tu_clave_secreta'  # Clave secreta para firmar las cookies de sesión
+app.secret_key = 'your_secret_key'  # Secret key to sign session cookies
 
-# Ruta para mostrar la página de inicio de sesión y manejar el inicio de sesión
 @app.route("/", methods=['GET', 'POST'])
 def login():
+    """Route to display the login page and handle login.
+
+    :returns: The login page or redirects to the menu if login is successful.
+    :rtype: str or Response
+    """
     error = None
 
     if request.method == "POST":
         email = request.form["email"]
-        contrasena = request.form["password"]
+        password = request.form["password"]
 
         cur = conn_db().cursor()
-        sql = f"SELECT * FROM Usuarios WHERE Correo=? AND Contraseña=?;"
-        rows = cur.execute(sql, (email, contrasena)).fetchall()
+        sql = "SELECT * FROM Usuarios WHERE Correo=? AND Contraseña=?;"
+        rows = cur.execute(sql, (email, password)).fetchall()
 
         if len(rows) > 0:
-            session["usuario"] = {"nombre": rows[0][0], "apellido": rows[0][1]}
+            session["user"] = {"first_name": rows[0][0], "last_name": rows[0][1]}
             return redirect(url_for("menu"))
         else:
-            error = "Usuario o Contraseña incorrectos."
-            flash(error, 'error')  # Almacenar el mensaje de error como un mensaje flash
+            error = "Incorrect username or password."
+            flash(error, 'error')  # Store the error message as a flash message
 
     return render_template("login.html")
 
-@app.route("/registro", methods=["GET", "POST"])
-def registro():
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    """Route to display the registration page and handle user registration.
+
+    :returns: The menu page if registration is successful, otherwise redirects to the registration page.
+    :rtype: str or Response
+    """
     if request.method == "POST":
-        nombre = request.form["nombre"]
-        apellido = request.form["apellido"]
-        email = request.form["correo"]
-        contrasena = request.form["contraseña"]
-        confirmar_contrasena = request.form["conf_contraseña"]
+        first_name = request.form["first_name"]
+        last_name = request.form["last_name"]
+        email = request.form["email"]
+        password = request.form["password"]
+        confirm_password = request.form["confirm_password"]
 
-        print("Procesando formulario de registro...")
-
-        # Validación de entradas
-        if not nombre or not apellido or not email or not contrasena or not confirmar_contrasena:
-            flash("Todos los campos son obligatorios.", 'error')
-        elif contrasena != confirmar_contrasena:
-            flash("Las contraseñas no coinciden.", 'error')
+        # Input validation
+        if not first_name or not last_name or not email or not password or not confirm_password:
+            flash("All fields are required.", 'error')
+        elif password != confirm_password:
+            flash("Passwords do not match.", 'error')
         elif not email.endswith("@seringtec.com"):
-            flash("El correo electrónico debe ser del dominio @seringtec.com.", 'error')
+            flash("Email must be from the @seringtec.com domain.", 'error')
         else:
             try:
-                conexion = conn_db()
-                cur = conexion.cursor()
-                sql_verificar = "SELECT * FROM Usuarios WHERE Correo=?;"
-                rows = cur.execute(sql_verificar, (email,)).fetchall()
+                connection = conn_db()
+                cur = connection.cursor()
+                sql_verify = "SELECT * FROM Usuarios WHERE Correo=?;"
+                rows = cur.execute(sql_verify, (email,)).fetchall()
 
                 if len(rows) > 0:
-                    flash("El correo electrónico ya está registrado.", 'error')
+                    flash("Email is already registered.", 'error')
                 else:
-                    sql_insertar = "INSERT INTO Usuarios (nombre, apellido, correo, contraseña) VALUES (?, ?, ?, ?);"
-                    cur.execute(sql_insertar, (nombre, apellido, email, contrasena))
-                    conexion.commit()
+                    sql_insert = "INSERT INTO Usuarios (nombre, apellido, correo, contraseña) VALUES (?, ?, ?, ?);"
+                    cur.execute(sql_insert, (first_name, last_name, email, password))
+                    connection.commit()
                     cur.close()
-                    # Redirigir al usuario a otra página después de un registro exitoso
-                    session["usuario"] = {"nombre": nombre, "apellido": apellido}
+                    # Redirect the user to another page after successful registration
+                    session["user"] = {"first_name": first_name, "last_name": last_name}
                     return redirect(url_for("menu"))
             except Exception as e:
-                flash(f"Error al registrar usuario: {e}", 'error')
+                flash(f"Error registering user: {e}", 'error')
 
-    print("Redireccionando al menú principal...")
+    print("Redirecting to the main menu...")
     return redirect(url_for('menu'))
 
 @app.route('/menu')
 def menu():
-    # Verificar si el usuario ha iniciado sesión
-    if 'usuario' not in session:
+    """Route to display the main menu page.
+
+    :returns: The menu page or redirects to the login page if the user is not logged in.
+    :rtype: str or Response
+    """
+    if 'user' not in session:
         return redirect(url_for('login'))
 
-    # Recuperar los datos de la sesión
-    datos_sesion = session['usuario']
-    nombre = datos_sesion['nombre']
-    apellido = datos_sesion['apellido']
+    session_data = session['user']
+    first_name = session_data['first_name']
+    last_name = session_data['last_name']
 
-    # Renderizar la página del menú
-    return render_template('menu.html', nombre=nombre, apellido=apellido)
+    return render_template('menu.html', first_name=first_name, last_name=last_name)
 
 @app.route('/spid')
 def spid():
-    # Verificar si el usuario ha iniciado sesión
-    if 'usuario' not in session:
+    """Route to display the SPID page.
+    
+    :returns: The SPID page or redirects to the login page if the user is not logged in.
+    :rtype: str or Response
+    """
+    if 'user' not in session:
         return redirect(url_for('login'))
 
-    # Recuperar los datos de la sesión
-    datos_sesion = session['usuario']
-    nombre = datos_sesion['nombre']
-    apellido = datos_sesion['apellido']
+    session_data = session['user']
+    first_name = session_data['first_name']
+    last_name = session_data['last_name']
 
-    # Renderizar la página del menú
-    return render_template('index.html', nombre=nombre, apellido=apellido)
+    return render_template('index.html', first_name=first_name, last_name=last_name)
 
 @app.route('/sel')
 def sel():
-    # Verificar si el usuario ha iniciado sesión
-    if 'usuario' not in session:
+    """Route to display the SEL page.
+
+    :returns: The SEL page or redirects to the login page if the user is not logged in.
+    :rtype: str or Response
+    """
+    if 'user' not in session:
         return redirect(url_for('login'))
 
-    # Recuperar los datos de la sesión
-    datos_sesion = session['usuario']
-    nombre = datos_sesion['nombre']
-    apellido = datos_sesion['apellido']
+    session_data = session['user']
+    first_name = session_data['first_name']
+    last_name = session_data['last_name']
 
-    # Renderizar la página del menú
-    return render_template('sel.html', nombre=nombre, apellido=apellido)
+    return render_template('sel.html', first_name=first_name, last_name=last_name)
 
 @app.route('/spi')
 def spi():
-    # Verificar si el usuario ha iniciado sesión
-    if 'usuario' not in session:
+    """Route to display the SPI page.
+
+    :returns: The SPI page or redirects to the login page if the user is not logged in.
+    :rtype: str or Response
+    """
+    if 'user' not in session:
         return redirect(url_for('login'))
 
-    # Recuperar los datos de la sesión
-    datos_sesion = session['usuario']
-    nombre = datos_sesion['nombre']
-    apellido = datos_sesion['apellido']
+    session_data = session['user']
+    first_name = session_data['first_name']
+    last_name = session_data['last_name']
 
-    # Renderizar la página del menú
-    return render_template('spi.html', nombre=nombre, apellido=apellido)
-    
+    return render_template('spi.html', first_name=first_name, last_name=last_name)
+
 @app.route('/s3d')
 def s3d():
-    # Verificar si el usuario ha iniciado sesión
-    if 'usuario' not in session:
+    """Route to display the S3D page.
+
+    :returns: The S3D page or redirects to the login page if the user is not logged in.
+    :rtype: str or Response
+    """
+    if 'user' not in session:
         return redirect(url_for('login'))
 
-    # Recuperar los datos de la sesión
-    datos_sesion = session['usuario']
-    nombre = datos_sesion['nombre']
-    apellido = datos_sesion['apellido']
+    session_data = session['user']
+    first_name = session_data['first_name']
+    last_name = session_data['last_name']
 
-    # Renderizar la página del menú
-    return render_template('s3d.html', nombre=nombre, apellido=apellido)
+    return render_template('s3d.html', first_name=first_name, last_name=last_name)
 
-
-# Ruta para cerrar sesión
 @app.route('/logout')
 def logout():
-    # Eliminar la sesión del usuario
-    session.pop('usuario', None)
+    """Route to log out the user.
+
+    :returns: Redirects to the login page.
+    :rtype: Response
+    """
+    session.pop('user', None)
     return redirect(url_for('login'))
-
-# Ruta para el menú después de iniciar sesión
-
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-    
-
-

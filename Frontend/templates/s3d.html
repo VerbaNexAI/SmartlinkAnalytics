@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Perfil - SmartLink Analytics{% endblock %}
+{% block title %}S3D - SmartLink Analytics{% endblock %}
 
 {% block content %}
 
@@ -20,9 +20,6 @@
             <!-- <h3>Preview:</h3> -->
             <div class="docs-preview clearfix">
                 <div class="img-preview preview-lg"></div>
-                <div class="img-preview preview-md"></div>
-                <div class="img-preview preview-sm"></div>
-                <div class="img-preview preview-xs"></div>
             </div>
 
             <!-- <h3>Data:</h3> -->
@@ -211,8 +208,8 @@
                             <span class="fa fa-sync-alt"></span>
                         </span>
                     </button>
-                    <label class="btn btn-primary btn-upload" for="inputImage" title="Upload image file">
-                        <input type="file" class="sr-only" id="inputImage" name="file" accept="image/*">
+                    <label class="btn btn-primary btn-upload" for="inputImage-s3d" title="Upload image file">
+                        <input type="file" class="sr-only" id="inputImage-s3d" name="file" accept="image/*">
                         <span class="docs-tooltip" data-toggle="tooltip" title="Import image with Blob URLs">
                             <span class="fa fa-upload"></span>
                         </span>
@@ -225,29 +222,6 @@
                 </div>
                 <br>
 
-                <div class="btn-group btn-group-crop">
-                    <button type="button" class="btn btn-success" data-method="getCroppedCanvas"
-                        data-option="{ &quot;maxWidth&quot;: 4096, &quot;maxHeight&quot;: 4096 }">
-                        <span class="docs-tooltip" data-toggle="tooltip"
-                            title="cropper.getCroppedCanvas({ maxWidth: 4096, maxHeight: 4096 })">
-                            Get Cropped Canvas
-                        </span>
-                    </button>
-                    <button type="button" class="btn btn-success" data-method="getCroppedCanvas"
-                        data-option="{ &quot;width&quot;: 160, &quot;height&quot;: 90 }">
-                        <span class="docs-tooltip" data-toggle="tooltip"
-                            title="cropper.getCroppedCanvas({ width: 160, height: 90 })">
-                            160&times;90
-                        </span>
-                    </button>
-                    <button type="button" class="btn btn-success" data-method="getCroppedCanvas"
-                        data-option="{ &quot;width&quot;: 320, &quot;height&quot;: 180 }">
-                        <span class="docs-tooltip" data-toggle="tooltip"
-                            title="cropper.getCroppedCanvas({ width: 320, height: 180 })">
-                            320&times;180
-                        </span>
-                    </button>
-                </div>
 
             </center>
             <!-- Show the cropped image in modal -->
@@ -276,6 +250,11 @@
 
         <div class="col-md-3 docs-toggles">
             <!-- <h3>Toggles:</h3> -->
+
+            <a class="btn btn-success btn-block" data-toggle="tooltip"
+            href="https://fengyuanchen.github.io/photo-editor" title="An advanced example of Cropper.js">Enviar
+            Plano</a>
+
             <div class="btn-group d-flex flex-nowrap" data-toggle="buttons">
                 <label class="btn btn-primary active">
                     <input type="radio" class="sr-only" id="aspectRatio1" name="aspectRatio" value="1.7777777777777777">
@@ -335,9 +314,7 @@
                     </span>
                 </label>
             </div>
-            <a class="btn btn-success btn-block" data-toggle="tooltip"
-                href="https://fengyuanchen.github.io/photo-editor" title="An advanced example of Cropper.js">Enviar
-                Plano</a>
+
 
         </div><!-- /.docs-toggles -->
     </div>

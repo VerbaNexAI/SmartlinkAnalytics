@@ -2,12 +2,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var uploadedImageURL;
     var cropper;
 
-
-    document.getElementById('inputImage').addEventListener('change', function() {
+    document.getElementById('inputImage-s3d').addEventListener('change', function() {
         var formData = new FormData();
         formData.append('file', this.files[0]);
 
-        fetch('http://127.0.0.1:8000/upload-image', {
+        fetch('http://127.0.0.1:8000/upload-image-s3d', {
             method: 'POST',
             body: formData
         })
@@ -27,21 +26,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             uploadedImage.src = imageUrl;
 
-        
             $('#imageModal').modal('show');
 
-           
             $('#imageModal').on('shown.bs.modal', function () {
                 if (cropper) {
                     cropper.destroy(); 
                 }
 
                 cropper = new Cropper(uploadedImage, {
-                    viewMode: 1,
+                    viewMode: 1, 
                     responsive: true,
-                    zoomOnWheel: true, 
+                    zoomOnWheel: true,
                     cropBoxResizable: true, 
-                    toggleDragModeOnDblclick: false, 
+                    toggleDragModeOnDblclick: false,
                     movable: true, 
                     zoomable: true, 
                     rotatable: true, 
