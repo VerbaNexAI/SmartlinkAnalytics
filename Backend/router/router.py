@@ -117,7 +117,7 @@ async def upload_image(file: UploadFile = File(...)):
             shutil.copyfileobj(file.file, buffer)
         print("filename:", file.filename, "\nfile_path:", file_path)
 
-        model_path = r'model/best.pt'
+        model_path = r'config/data/models/model_pid.pt'
         model = YOLO(model_path)
         img = cv2.imread(file_path)
         if img is None:
@@ -157,7 +157,7 @@ async def upload_image_s3d(file: UploadFile = File(...)):
             shutil.copyfileobj(file.file, buffer)
         print("filename:", file.filename, "\nfile_path:", file_path)
 
-        model_path = r'model/best.pt'
+        model_path = r'config/data/models/model_pid.pt'
         model = YOLO(model_path)
         img = cv2.imread(file_path)
         if img is None:
@@ -197,7 +197,7 @@ async def upload_image_spi(file: UploadFile = File(...)):
             shutil.copyfileobj(file.file, buffer)
         print("filename:", file.filename, "\nfile_path:", file_path)
 
-        model_path = r'model/best.pt'
+        model_path = r'config/data/models/model_pid.pt'
         model = YOLO(model_path)
         img = cv2.imread(file_path)
         if img is None:
