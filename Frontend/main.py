@@ -1,9 +1,9 @@
 from flask import Flask, render_template, redirect, request, url_for, session, flash
-import pyodbc
 from config.db import conn_db
+from config.db_queries import authenticate_user, check_email_exists, register_new_user
 
 app = Flask(__name__, static_folder='static')
-app.secret_key = 'your_secret_key'  # Secret key to sign session cookies
+app.secret_key = 'your_secret_key'
 
 @app.route("/", methods=['GET', 'POST'])
 def login():
@@ -18,19 +18,16 @@ def login():
         email = request.form["email"]
         password = request.form["password"]
 
-        cur = conn_db().cursor()
-        sql = "SELECT * FROM Usuarios WHERE Correo=? AND Contraseña=?;"
-        rows = cur.execute(sql, (email, password)).fetchall()
+        user = authenticate_user(email, password)
 
-        if len(rows) > 0:
-            session["user"] = {"first_name": rows[0][0], "last_name": rows[0][1]}
+        if user:
+            session["user"] = user
             return redirect(url_for("menu"))
         else:
             error = "Incorrect username or password."
-            flash(error, 'error')  # Store the error message as a flash message
+            flash(error, 'error')
 
     return render_template("login.html")
-
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -53,28 +50,16 @@ def register():
             flash("Passwords do not match.", 'error')
         elif not email.endswith("@seringtec.com"):
             flash("Email must be from the @seringtec.com domain.", 'error')
+        elif check_email_exists(email):
+            flash("Email is already registered.", 'error')
         else:
-            try:
-                connection = conn_db()
-                cur = connection.cursor()
-                sql_verify = "SELECT * FROM Usuarios WHERE Correo=?;"
-                rows = cur.execute(sql_verify, (email,)).fetchall()
+            if register_new_user(first_name, last_name, email, password):
+                session["user"] = {"first_name": first_name, "last_name": last_name}
+                return redirect(url_for("menu"))
+            else:
+                flash("Error registering user.", 'error')
 
-                if len(rows) > 0:
-                    flash("Email is already registered.", 'error')
-                else:
-                    sql_insert = "INSERT INTO Usuarios (nombre, apellido, correo, contraseña) VALUES (?, ?, ?, ?);"
-                    cur.execute(sql_insert, (first_name, last_name, email, password))
-                    connection.commit()
-                    cur.close()
-                    # Redirect the user to another page after successful registration
-                    session["user"] = {"first_name": first_name, "last_name": last_name}
-                    return redirect(url_for("menu"))
-            except Exception as e:
-                flash(f"Error registering user: {e}", 'error')
-
-    print("Redirecting to the main menu...")
-    return redirect(url_for('menu'))
+    return render_template("login.html")
 
 @app.route('/menu')
 def menu():
@@ -95,7 +80,7 @@ def menu():
 @app.route('/spid')
 def spid():
     """Route to display the SPID page.
-    
+
     :returns: The SPID page or redirects to the login page if the user is not logged in.
     :rtype: str or Response
     """
