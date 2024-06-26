@@ -251,9 +251,7 @@
         <div class="col-md-3 docs-toggles">
             <!-- <h3>Toggles:</h3> -->
 
-            <a class="btn btn-success btn-block" data-toggle="tooltip"
-            href="https://fengyuanchen.github.io/photo-editor" title="An advanced example of Cropper.js">Enviar
-            Plano</a>
+            <a class="btn btn-success btn-block" data-toggle="tooltip" href="#" id="submitBtn" title="Envíe el plano seleccionado">Enviar Plano</a>
 
             <div class="btn-group d-flex flex-nowrap" data-toggle="buttons">
                 <label class="btn btn-primary active">
@@ -288,36 +286,12 @@
                 </label>
             </div>
 
-            <div class="btn-group d-flex flex-nowrap" data-toggle="buttons">
-                <label class="btn btn-primary active">
-                    <input type="radio" class="sr-only" id="viewMode0" name="viewMode" value="0" checked>
-                    <span class="docs-tooltip" data-toggle="tooltip" title="View Mode 0">
-                        VM0
-                    </span>
-                </label>
-                <label class="btn btn-primary">
-                    <input type="radio" class="sr-only" id="viewMode1" name="viewMode" value="1">
-                    <span class="docs-tooltip" data-toggle="tooltip" title="View Mode 1">
-                        VM1
-                    </span>
-                </label>
-                <label class="btn btn-primary">
-                    <input type="radio" class="sr-only" id="viewMode2" name="viewMode" value="2">
-                    <span class="docs-tooltip" data-toggle="tooltip" title="View Mode 2">
-                        VM2
-                    </span>
-                </label>
-                <label class="btn btn-primary">
-                    <input type="radio" class="sr-only" id="viewMode3" name="viewMode" value="3">
-                    <span class="docs-tooltip" data-toggle="tooltip" title="View Mode 3">
-                        VM3
-                    </span>
-                </label>
-            </div>
-
 
         </div><!-- /.docs-toggles -->
     </div>
 </div>
-
+ 
+    <!-- s3d -->
+    <script src="{{ url_for('static', filename='js/s3d/cropper_main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/s3d/s3d.js') }}"></script>
 {% endblock %}

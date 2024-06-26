@@ -4,36 +4,29 @@ const apiUrlInactivos = 'http://127.0.0.1:8000/api/project/inactive';
 const postUrl = 'http://127.0.0.1:8000/api/view';
 
 // Elementos del DOM
-const dataList = document.getElementById('data-list');
-const dataListInactivos = document.getElementById('data_list_inactive');
-const table = document.getElementById('myTable');
-const itemsPerPage = 10; 
+const table = document.getElementById('example');
+const itemsPerPage = 10;
 
-// Manejo de la respuesta de la API
-const handleResponse = (response, element, paginationId) => {
+// Manejo de la respuesta de la API para proyectos
+const handleProjectsResponse = (response, element, paginationId) => {
     if (!response.ok) {
         throw new Error('Network response was not ok ' + response.statusText);
     }
     return response.json().then(data => {
-        console.log(data);
-        const items = data.map(item => {
-            const listItem = document.createElement('li');
-            const icon = document.createElement('i');
-            icon.className = "fa-solid fa-folder";
-            listItem.appendChild(icon);
-            const text = document.createTextNode(` ${item.PROYECTO}`);
-            listItem.appendChild(text);
-            listItem.addEventListener('click', () => {
-                sendPostRequest(item.PROYECTO); // Enviar solo el nombre del proyecto
-            });
-
-            return listItem;
-        });
-        paginate(items, element, paginationId);
+        console.log(data); // Verifica los datos recibidos en la consola
+        renderProjectsList(data, element, paginationId);
     });
 };
 
-// Enviar solicitud POST
+// Manejo de la respuesta de la API para solicitud POST
+const handlePostResponse = (response) => {
+    if (!response.ok) {
+        throw new Error('Network response was not ok ' + response.statusText);
+    }
+    return response.json();
+};
+
+// Enviar solicitud POST y actualizar la tabla
 const sendPostRequest = (project) => {
     fetch(postUrl, {
         method: 'POST',
@@ -42,14 +35,9 @@ const sendPostRequest = (project) => {
         },
         body: JSON.stringify({ project: project }),
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
-        }
-        return response.json();
-    })
+    .then(handlePostResponse)
     .then(data => {
-        console.log('Success:', data);
+        console.log('Success:', data); // Verifica la respuesta del POST en la consola
         renderTable(data);
     })
     .catch(error => {
@@ -57,30 +45,60 @@ const sendPostRequest = (project) => {
     });
 };
 
-// Renderizar la tabla
+// Renderizar la tabla con los datos recibidos
 const renderTable = (data) => {
-    table.innerHTML = '';
-    const headerRow = document.createElement('tr');
-    for (const key in data[0]) {
-        const th = document.createElement('th');
-        th.textContent = key;
-        headerRow.appendChild(th);
-    }
-    table.appendChild(headerRow);
-    data.forEach(item => {
-        const row = document.createElement('tr');
-        for (const key in item) {
-            const cell = document.createElement('td');
-            cell.textContent = item[key];
-            row.appendChild(cell);
-        }
-        table.appendChild(row);
+    // Crear la tabla
+    const table = $('<table>').attr('id', 'example').addClass('table table-striped table-bordered second').css('width', '100%');
+
+    // Cabecera de la tabla
+    const headerRow = $('<thead>').appendTo(table);
+    const headerCells = $('<tr>').appendTo(headerRow);
+    Object.keys(data[0]).forEach(key => {
+        $('<th>').text(key).appendTo(headerCells);
     });
+
+    // Cuerpo de la tabla
+    const tbody = $('<tbody>').appendTo(table);
+    data.forEach(item => {
+        const row = $('<tr>').appendTo(tbody);
+        Object.values(item).forEach(value => {
+            $('<td>').text(value).appendTo(row);
+        });
+    });
+
+    // Añadir la tabla al contenedor .table-responsive
+    $('.table-responsive').empty().append(table);
+
+    $(document).ready(function() {
+        $('.reporte').css('background-color', '#fff');
+    });
+
+    // Inicializar DataTables
+    $('#example').DataTable({
+        dom: '<"row"<"col-md-6"l><"col-md-6"f>><"row"<"col-md-12"B>>rtip', // Alineación de botones y barra de búsqueda
+        buttons: [
+            'copy', 'excel', 'pdf', 'print'
+        ]
+    });
+};
+
+// Renderizar la lista de proyectos activos o inactivos
+const renderProjectsList = (data, element, paginationId) => {
+    const items = data.map(item => {
+        const listItem = document.createElement('li');
+        listItem.textContent = item.PROYECTO;
+        listItem.addEventListener('click', () => {
+            sendPostRequest(item.PROYECTO); // Enviar solo el nombre del proyecto al hacer clic
+        });
+        return listItem;
+    });
+
+    paginate(items, element, paginationId);
 };
 
 // Fetch datos activos
 fetch(apiUrl)
-    .then(response => handleResponse(response, dataList, 'active'))
+    .then(response => handleProjectsResponse(response, document.getElementById('data-list'), 'active'))
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
         const errorItem = document.createElement('li');
@@ -91,7 +109,7 @@ fetch(apiUrl)
 
 // Fetch datos inactivos
 fetch(apiUrlInactivos)
-    .then(response => handleResponse(response, dataListInactivos, 'inactive'))
+    .then(response => handleProjectsResponse(response, document.getElementById('data_list_inactive'), 'inactive'))
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
         const errorItem = document.createElement('li');
