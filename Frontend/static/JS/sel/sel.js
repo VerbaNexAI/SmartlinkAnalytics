@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    
     const imageGallery = document.getElementById('image-gallery');
     const fileInput = document.getElementById('file-input');
     const gallery = document.getElementById('gallery');
@@ -120,52 +121,68 @@ document.addEventListener('DOMContentLoaded', () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
     
-        // Agregar todas las imágenes al PDF
-        for (let i = 0; i < thumbnailsResponse.children.length; i++) {
-            const img = thumbnailsResponse.children[i].querySelector('img');
-            const base64Img = img.src;
+        // Título del reporte en la primera página
+        doc.setFontSize(20);
+        doc.text('REPORTE DE VALIDACIÓN DE CONSISTENCIA', 20, 20);
+
+        // Recorrer todas las imágenes procesadas
+        for (let i = 0; i < processedImages.length; i++) {
+            const imageData = processedImages[i];
+            const base64Img = `data:image/jpeg;base64,${imageData.image_base64}`;
     
-            // Obtener los datos asociados a la imagen
-            const imageData = processedImages.find(image => `data:image/jpeg;base64, ${image.image_base64}` === base64Img);
+            console.log(imageData);
+            console.log(imageData.filename);
     
-            // Verificar que imageData y sus propiedades existan antes de acceder a ellas
-            if (imageData && imageData['Fecha de Generación'] && imageData['Empresa'] && imageData['Detecciones']) {
-                const fechaGeneracion = imageData['Fecha de Generación'];
-                const empresa = imageData['Empresa'];
-                const detecciones = imageData['Detecciones'];
+            // Obtener los datos asociados a la imagen desde dataset de miniatura
+            const fechaGeneracion = imageData['Fecha de Generación'];
+            const empresa = imageData['Empresa'];
+            const detecciones = imageData['Detecciones'];
     
-                // Convertir a base64 y agregar al PDF
-                const imgData = await fetch(base64Img).then(res => res.blob());
-                const imgURL = URL.createObjectURL(imgData);
+            const imageFileName = imageData.filename;
+            const tableData = detecciones
+                .filter(deteccion => deteccion.Imagen === imageFileName)
+                .map(deteccion => [
+                    deteccion.Clase,
+                    deteccion.Confianza.toFixed(3),
+                    deteccion.Box_X1.toFixed(3),
+                    deteccion.Box_Y1.toFixed(3),
+                    deteccion.Box_X2.toFixed(3),
+                    deteccion.Box_Y2.toFixed(3)
+                ]);
     
-                // Asegurarse de que las imágenes se ajusten a la página del PDF
-                const imgProps = doc.getImageProperties(imgURL);
-                const pdfWidth = doc.internal.pageSize.getWidth();
-                const pdfHeight = doc.internal.pageSize.getHeight();
-                const padding = 20;
-                const imgWidth = pdfWidth - padding * 2;
-                const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
-    
-                const x = padding;
-                const y = (pdfHeight - imgHeight) / 2; // Centrar verticalmente
-    
-                doc.text(`Fecha de Generación: ${fechaGeneracion}`, padding, padding);
-                doc.text(`Empresa: ${empresa}`, padding, padding + 10);
-                doc.text(`Detecciones: ${JSON.stringify(detecciones)}`, padding, padding + 20);
-                doc.addImage(imgURL, 'JPEG', x, y, imgWidth, imgHeight);
-    
-                if (i < thumbnailsResponse.children.length - 1) {
-                    doc.addPage();
-                }
-            } else {
-                console.error('Error: imageData or its properties are undefined or null.');
+            // Asegurarse de que haya espacio suficiente para la tabla
+            if (i > 0) {
+                doc.addPage();
             }
+
+            // Agregar la información al principio del PDF
+            doc.autoTable({
+                startY: 30,
+                head: [['Fecha de Generación', 'Herramienta', 'Empresa', 'Nombre de la imagen']],
+                body: [
+                    [fechaGeneracion, 'Smart Electrical', empresa, imageData.filename]
+                ]
+            });
+    
+            // Agregar la imagen al PDF
+            doc.addImage(base64Img, 'JPEG', 20, 60, 160, 120);
+    
+            // Calcular la posición Y de la segunda tabla
+            const imageHeight = 120; // Altura de la imagen
+            const imageStartY = 60; // Coordenada Y de inicio de la imagen
+            const tableStartY = imageStartY + imageHeight + 10; // Espacio adicional entre la imagen y la tabla
+    
+            // Agregar la tabla de detecciones al PDF
+            doc.autoTable({
+                startY: tableStartY,
+                head: [['Clase', 'Confianza', 'Box_X1', 'Box_Y1', 'Box_X2', 'Box_Y2']],
+                body: tableData,
+            });
         }
     
         // Descargar el PDF
-        doc.save('Planimetrias.pdf');
-    });
-    
+        doc.save('REPORTE DE VALIDACIÓN DE CONSISTENCIA.pdf');
+    });  
 
     // Manejo de archivos seleccionados
     function handleFiles(files) {
