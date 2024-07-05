@@ -139,7 +139,71 @@ def s3d():
     first_name = session_data['first_name']
     last_name = session_data['last_name']
 
-    return render_template('s3d.html', first_name=first_name, last_name=last_name)
+    return render_template('menu-s3d.html', first_name=first_name, last_name=last_name)
+
+@app.route('/mecanica')
+def mecanica():
+    """Route to display the mecanica page.
+
+    :returns: The mecanica page or redirects to the login page if the user is not logged in.
+    :rtype: str or Response
+    """
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    session_data = session['user']
+    first_name = session_data['first_name']
+    last_name = session_data['last_name']
+
+    return render_template('mecanica.html', first_name=first_name, last_name=last_name)
+
+@app.route('/instrumental')
+def instrumental():
+    """Route to display the instrumental page.
+
+    :returns: The instrumental page or redirects to the login page if the user is not logged in.
+    :rtype: str or Response
+    """
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    session_data = session['user']
+    first_name = session_data['first_name']
+    last_name = session_data['last_name']
+
+    return render_template('instrumental.html', first_name=first_name, last_name=last_name)
+
+@app.route('/civil')
+def civil():
+    """Route to display the civil page.
+
+    :returns: The civil page or redirects to the login page if the user is not logged in.
+    :rtype: str or Response
+    """
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    session_data = session['user']
+    first_name = session_data['first_name']
+    last_name = session_data['last_name']
+
+    return render_template('civil.html', first_name=first_name, last_name=last_name)
+
+@app.route('/electrica')
+def electrica():
+    """Route to display the electrica page.
+
+    :returns: The electrica page or redirects to the login page if the user is not logged in.
+    :rtype: str or Response
+    """
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    session_data = session['user']
+    first_name = session_data['first_name']
+    last_name = session_data['last_name']
+
+    return render_template('electrica.html', first_name=first_name, last_name=last_name)
 
 @app.route('/logout')
 def logout():
@@ -153,3 +217,6 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+

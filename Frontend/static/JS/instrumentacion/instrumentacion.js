@@ -7,8 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('container');
     const galleryContainer = document.getElementById('gallery-container');
     const addMoreImagesBtn = document.getElementById('add-more-images-btn');
-    const downloadCurrentImageBtn = document.getElementById('download-current-image-btn');
-    const downloadPdfButton = document.getElementById('download-pdf-button');
+    const downloadBtn = document.getElementById('download-btn');
 
     const galleryResponseContainer = document.getElementById('gallery-response-container');
     const mainImageResponse = document.getElementById('main-image_response');
@@ -16,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Array para mantener registros de todas las imágenes seleccionadas
     let allSelectedImages = [];
-    let processedImages = []; // Definir la variable processedImages
 
     // Manejo de clics en la galería de imágenes y el selector de archivos
     fileSelect.addEventListener('click', () => fileInput.click());
@@ -44,21 +42,21 @@ document.addEventListener('DOMContentLoaded', () => {
         // Obtener imágenes únicas seleccionadas
         const uniqueImages = Array.from(new Set(allSelectedImages.map(image => image.name)));
         const formData = new FormData();
-
+        
         uniqueImages.forEach(imageName => {
             const image = allSelectedImages.find(img => img.name === imageName);
             formData.append('files', image);
         });
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/upload-image-sel', {
+            const response = await fetch('http://127.0.0.1:8000/upload-image-s3d-instrumentacion', {
                 method: 'POST',
                 body: formData,
             });
 
             if (response.ok) {
                 console.log('Files uploaded successfully');
-                processedImages = await response.json(); // Asignar a processedImages
+                const processedImages = await response.json();
                 displayProcessedImages(processedImages);
                 alert('Imágenes enviadas y procesadas correctamente.');
             } else {
@@ -85,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const thumbnailItem = document.createElement('div');
             thumbnailItem.className = 'thumbnail-item';
             thumbnailItem.appendChild(img);
-
+            
             thumbnailsResponse.appendChild(thumbnailItem);
 
             // Agregar imagen grande
@@ -108,64 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Agregar más imágenes al hacer clic en el botón correspondiente
     addMoreImagesBtn.addEventListener('click', () => fileInput.click());
 
-    // Manejo de descarga de la imagen visible
-    downloadCurrentImageBtn.addEventListener('click', () => {
-        const link = document.createElement('a');
-        link.href = mainImageResponse.src;
-        link.download = 'imagen_descargada.jpg';
-        link.click();
+    // Lógica para descargar imágenes (por implementar)
+    downloadBtn.addEventListener('click', () => {
+        alert('Implementa la lógica para descargar las imágenes aquí.');
     });
-
-    downloadPdfButton.addEventListener('click', async () => {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-    
-        // Agregar todas las imágenes al PDF
-        for (let i = 0; i < thumbnailsResponse.children.length; i++) {
-            const img = thumbnailsResponse.children[i].querySelector('img');
-            const base64Img = img.src;
-    
-            // Obtener los datos asociados a la imagen
-            const imageData = processedImages.find(image => `data:image/jpeg;base64, ${image.image_base64}` === base64Img);
-    
-            // Verificar que imageData y sus propiedades existan antes de acceder a ellas
-            if (imageData && imageData['Fecha de Generación'] && imageData['Empresa'] && imageData['Detecciones']) {
-                const fechaGeneracion = imageData['Fecha de Generación'];
-                const empresa = imageData['Empresa'];
-                const detecciones = imageData['Detecciones'];
-    
-                // Convertir a base64 y agregar al PDF
-                const imgData = await fetch(base64Img).then(res => res.blob());
-                const imgURL = URL.createObjectURL(imgData);
-    
-                // Asegurarse de que las imágenes se ajusten a la página del PDF
-                const imgProps = doc.getImageProperties(imgURL);
-                const pdfWidth = doc.internal.pageSize.getWidth();
-                const pdfHeight = doc.internal.pageSize.getHeight();
-                const padding = 20;
-                const imgWidth = pdfWidth - padding * 2;
-                const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
-    
-                const x = padding;
-                const y = (pdfHeight - imgHeight) / 2; // Centrar verticalmente
-    
-                doc.text(`Fecha de Generación: ${fechaGeneracion}`, padding, padding);
-                doc.text(`Empresa: ${empresa}`, padding, padding + 10);
-                doc.text(`Detecciones: ${JSON.stringify(detecciones)}`, padding, padding + 20);
-                doc.addImage(imgURL, 'JPEG', x, y, imgWidth, imgHeight);
-    
-                if (i < thumbnailsResponse.children.length - 1) {
-                    doc.addPage();
-                }
-            } else {
-                console.error('Error: imageData or its properties are undefined or null.');
-            }
-        }
-    
-        // Descargar el PDF
-        doc.save('Planimetrias.pdf');
-    });
-    
 
     // Manejo de archivos seleccionados
     function handleFiles(files) {

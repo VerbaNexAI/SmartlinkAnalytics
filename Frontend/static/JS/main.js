@@ -27,11 +27,34 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    paginationActivos.addEventListener('click', function (event) {
+    // Evitar que los clics en la paginación afecten al menú
+    const paginationInactive = document.getElementById('pagination-inactive');
+    paginationInactive.addEventListener('click', function (event) {
         event.stopPropagation();
     });
 
-    paginationInactivos.addEventListener('click', function (event) {
+    const prevInactive = document.getElementById('prev-inactive');
+    prevInactive.addEventListener('click', function (event) {
+        event.stopPropagation();
+    });
+
+    const nextInactive = document.getElementById('next-inactive');
+    nextInactive.addEventListener('click', function (event) {
+        event.stopPropagation();
+    });
+
+    const paginationActive = document.getElementById('pagination-active');
+    paginationActive.addEventListener('click', function (event) {
+        event.stopPropagation();
+    });
+
+    const prevActive = document.getElementById('prev-active');
+    prevActive.addEventListener('click', function (event) {
+        event.stopPropagation();
+    });
+
+    const nextActive = document.getElementById('next-active');
+    nextActive.addEventListener('click', function (event) {
         event.stopPropagation();
     });
 });
