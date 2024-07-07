@@ -1,27 +1,43 @@
-name: Build
+name: build
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - master # or the name of your main branch
+      - develop
+ 
+  pull_request:
+    types: [opened, synchronize, reopened]
 jobs:
-  sonarcloud:
-    name: SonarCloud
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 310
-      - name: Install tox and any other packages
-        run: pip install tox
-      - name: Run tox
-        run: tox -e py
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          SONAR_TOKEN: dc803d749a4982fa7867060462875652789a9c5b
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 pylint bandit pytest coverage
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Run linters
+        working-directory: .
+        run: |
+          chmod +x ./run_linters.sh
+          ./run_linters.sh
+      - name: Patch project version
+        run: |
+          version=$(grep VERSION sonar/version.py | cut -d "=" -f 2 | sed "s/[\'\" ]//g")
+          echo "sonar.projectVersion=$version" >> sonar-project.properties
+      - name: SonarCloud scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.verbose=false
