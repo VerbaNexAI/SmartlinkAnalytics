@@ -2,218 +2,389 @@ import os
 import shutil
 import io
 import cv2
+import logging
+import pandas as pd
 from typing import List
 from fastapi import APIRouter, HTTPException, File, UploadFile
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, JSONResponse
 from pydantic import BaseModel
-from config.db import connect_db
-from model.projects import get_active_projects, get_inactive_projects_from_db,get_project,get_view_data
+from model.sql_transactions import SQLTransactions, detectar_objetos
 from ultralytics import YOLO
+import base64
+from datetime import datetime
 
 # Create a FastAPI router instance
 router = APIRouter()
 
-class ProjectContent(BaseModel):
-    """Model for project content.
+class ProjectModel(BaseModel):
+    project_id: str
+
+class ProjectsContent(BaseModel):
+    projects: List[ProjectModel]
+
+class ProjectContent:
+    sql_trans = SQLTransactions()
+
+    @router.get("/")
+    def root():
+        return {"projects": "Here you can find the projects or SDGs"}
+
+    @router.get("/api/project")
+    async def get_projects():
+        try:
+            projects = ProjectContent.sql_trans.get_active_projects()
+        except HTTPException as e:
+            raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+        unique_projects = []
+        seen_projects = set()
+
+        for project in projects:
+            if project["name"] not in seen_projects:
+                unique_projects.append(project)
+                seen_projects.add(project["name"])
+
+        return unique_projects
+
+    @router.get("/api/project/inactive")
+    async def get_inactive_projects(self):
+        try:
+            projects = await self.sql_trans.get_inactive_projects_from_db()
+        except HTTPException as e:
+            raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+        unique_projects = []
+        seen_projects = set()
+
+        for project in projects:
+            if project["PROYECTO"] not in seen_projects:
+                unique_projects.append(project)
+                seen_projects.add(project["PROYECTO"])
+
+        return unique_projects
+
+    @router.post("/api/view")
+    async def post_project_content(projects: ProjectsContent) -> List[dict]:
+        try:
+            logging.info(f"Received projects: {projects}")
+            project_data = projects.dict()["projects"]
+            projects_info = [ProjectContent.sql_trans.get_project(p) for p in project_data]
+            
+            if projects_info:
+                logging.info(f"Projects found: {projects_info}")
+                result = ProjectContent.sql_trans.get_view_data()
+                data = ProjectContent.sql_trans.create_text_label_df(result)
+
+                df = pd.DataFrame(result)
+                df_seleccionado = df[['SP_Item2ID', 'GraphicOID', 'SP_DrawingID', 'Item1Location', 'IsApproved', 'InconsistencyStatus', 'Severity']]
+                lista_resultado = df_seleccionado.to_dict(orient='records')
+                combinado = []
+
+                for original, seleccionado in zip(data, lista_resultado):
+                    if original['label'] == 'LABEL_0':
+                        original['descripcion'] = "Consistent"
+                    elif original['label'] == 'LABEL_1':
+                        original['Description'] = 'Inconsistent Property Value'
+                    combinado.append({**original, **seleccionado})
+
+                logging.info(f"Combined result: {combinado}")
+                return combinado
+            else:
+                logging.warning(f"Projects not found for: {projects}")
+                raise HTTPException(status_code=404, detail="Projects not found")
+        except HTTPException as http_exc:
+            logging.error(f"HTTP exception occurred: {http_exc.detail}")
+            raise http_exc
+        except Exception as e:
+            logging.error(f"An unexpected error occurred: {str(e)}")
+            raise HTTPException(status_code=500, detail="An unexpected error occurred")
+
+    @router.post("/upload-image-sel", response_class=JSONResponse)
+    async def upload_images_sel(files: List[UploadFile] = File(...)):
+        try:
+            upload_folder = os.getenv('UPLOAD_FOLDER')
+            os.makedirs(upload_folder, exist_ok=True)
+            processed_images = []
+            detections = []
     
-    Attributes:
-        project (str): The project name.
-    """
-    project: str
-
-@router.get("/")
-def root():
-    """Root endpoint to return available projects or SDGs.
-
-    :returns: A dictionary containing available projects or SDGs.
-    :rtype: dict
-    """
-    return {"projects": "Here you can find the projects or SDGs"}
-
-@router.get("/api/project")
-async def get_projects():
-    """Retrieve and return active projects.
-
-    :returns: A list of unique active projects.
-    :rtype: List[dict]
-    :raises HTTPException: If there is an issue retrieving projects.
-    """
-    try:
-        projects = get_active_projects()
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-    unique_projects = []
-    seen_projects = set()
-
-    for project in projects:
-        if project["PROYECTO"] not in seen_projects:
-            unique_projects.append(project)
-            seen_projects.add(project["PROYECTO"])
-
-    return unique_projects
-
-@router.get("/api/project/inactive")
-async def get_inactive_projects():
-    """Retrieve and return inactive projects.
-
-    :returns: A list of unique inactive projects.
-    :rtype: List[dict]
-    :raises HTTPException: If there is an issue retrieving projects.
-    """
-    try:
-        projects = await get_inactive_projects_from_db()
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-    unique_projects = []
-    seen_projects = set()
-
-    for project in projects:
-        if project["PROYECTO"] not in seen_projects:
-            unique_projects.append(project)
-            seen_projects.add(project["PROYECTO"])
-
-    return unique_projects
-
-@router.post("/api/view")
-async def post_project_content(project: ProjectContent) -> List[dict]:
-    """Retrieve views for a specific project.
-
-    :param project: The project content model.
-    :type project: ProjectContent
-    :returns: A list of views related to the project.
-    :rtype: List[dict]
-    :raises HTTPException: If there is an issue connecting to the database or executing queries.
-    """
-    print(f"Project: {project.project}")
-
-    projects = get_project(project.project)
+            for file in files:
+                file_path = os.path.join(upload_folder, file.filename)
     
-    if projects:
-        print(f"Projects found: {projects}")
-        result = get_view_data()
-        return result
-    else:
-        print(f"Project not found for: {project.project}")
-        raise HTTPException(status_code=404, detail="Project not found")
+                with open(file_path, "wb") as buffer:
+                    shutil.copyfileobj(file.file, buffer)
+                print(f"Uploaded image: {file.filename}")
+    
+                model_path = r'config/data/models/model_pid.pt'
+                model = YOLO(model_path)
+                img = cv2.imread(file_path)
+                if img is None:
+                    raise HTTPException(status_code=400, detail=f"Failed to read image: {file.filename}")
+    
+                predictions = model.predict(img)
+                output_img = predictions[0].plot()
+    
+                retval, buffer = cv2.imencode('.jpg', output_img)
+                if not retval:
+                    raise HTTPException(status_code=500, detail=f"Failed to encode image: {file.filename}")
+    
+                print(f"Image {file.filename} processed and encoded successfully")
+                encoded_img = base64.b64encode(buffer).decode('utf-8')
+                detections.extend(detectar_objetos(model, [file_path]))
+                fecha_generacion = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                nombre_empresa = 'SERINGTEC'
 
-@router.post("/upload-image", response_class=StreamingResponse)
-async def upload_image(file: UploadFile = File(...)):
-    """Upload an image, perform YOLO prediction, and return processed image.
+                processed_images.append({
+                    "filename": file.filename,
+                    "image_base64": encoded_img,
+                    "Fecha de Generación": fecha_generacion,
+                    "Empresa": nombre_empresa,
+                    "Detecciones": detections
+                })
+    
+            return JSONResponse(content=processed_images)
+    
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
-    :param file: The uploaded image file.
-    :type file: UploadFile
-    :returns: A streaming response with the processed image in JPEG format.
-    :rtype: StreamingResponse
-    :raises HTTPException: If there is an issue with the image upload, reading, processing, or encoding.
-    """
-    try:
-        upload_folder = os.getenv('UPLOAD_FOLDER')
-        os.makedirs(upload_folder, exist_ok=True)
-        file_path = os.path.join(upload_folder, file.filename)
 
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-        print("filename:", file.filename, "\nfile_path:", file_path)
+    @router.post("/upload-image-spi", response_class=JSONResponse)
+    async def upload_image_spi(files: List[UploadFile] = File(...)):
+            try:
+                upload_folder = os.getenv('UPLOAD_FOLDER')
+                os.makedirs(upload_folder, exist_ok=True)
+                processed_images = []
+                detections = []
+        
+                for file in files:
+                    file_path = os.path.join(upload_folder, file.filename)
+        
+                    with open(file_path, "wb") as buffer:
+                        shutil.copyfileobj(file.file, buffer)
+                    print(f"Uploaded image: {file.filename}")
+        
+                    model_path = r'config/data/models/model_pid.pt'
+                    model = YOLO(model_path)
+                    img = cv2.imread(file_path)
+                    if img is None:
+                        raise HTTPException(status_code=400, detail=f"Failed to read image: {file.filename}")
+        
+                    predictions = model.predict(img)
+                    output_img = predictions[0].plot()
+        
+                    retval, buffer = cv2.imencode('.jpg', output_img)
+                    if not retval:
+                        raise HTTPException(status_code=500, detail=f"Failed to encode image: {file.filename}")
+        
+                    print(f"Image {file.filename} processed and encoded successfully")
+                    encoded_img = base64.b64encode(buffer).decode('utf-8')
+                    detections.extend(detectar_objetos(model, [file_path]))
+                    fecha_generacion = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    nombre_empresa = 'SERINGTEC'
 
-        model_path = r'config/data/models/model_pid.pt'
-        model = YOLO(model_path)
-        img = cv2.imread(file_path)
-        if img is None:
-            raise HTTPException(status_code=400, detail="Failed to read image")
+                    processed_images.append({
+                        "filename": file.filename,
+                        "image_base64": encoded_img,
+                        "Fecha de Generación": fecha_generacion,
+                        "Empresa": nombre_empresa,
+                        "Detecciones": detections
+                    })
+        
+                return JSONResponse(content=processed_images)
+        
+            except Exception as e:
+                print(f"An error occurred: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+            
+    @router.post("/upload-image-s3d-mecanica", response_class=JSONResponse)
+    async def upload_image_s3d_macanica(files: List[UploadFile] = File(...)):
+            try:
+                upload_folder = os.getenv('UPLOAD_FOLDER')
+                os.makedirs(upload_folder, exist_ok=True)
+                processed_images = []
+                detections = []
+        
+                for file in files:
+                    file_path = os.path.join(upload_folder, file.filename)
+        
+                    with open(file_path, "wb") as buffer:
+                        shutil.copyfileobj(file.file, buffer)
+                    print(f"Uploaded image: {file.filename}")
+        
+                    model_path = r'config/data/models/modelo-s3d-mecanica.pt'
+                    model = YOLO(model_path)
+                    img = cv2.imread(file_path)
+                    if img is None:
+                        raise HTTPException(status_code=400, detail=f"Failed to read image: {file.filename}")
+        
+                    predictions = model.predict(img)
+                    output_img = predictions[0].plot()
+        
+                    retval, buffer = cv2.imencode('.jpg', output_img)
+                    if not retval:
+                        raise HTTPException(status_code=500, detail=f"Failed to encode image: {file.filename}")
+        
+                    print(f"Image {file.filename} processed and encoded successfully")
+                    encoded_img = base64.b64encode(buffer).decode('utf-8')
+                    detections.extend(detectar_objetos(model, [file_path]))
+                    fecha_generacion = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    nombre_empresa = 'SERINGTEC'
 
-        predictions = model.predict(img)
-        output_img = predictions[0].plot()
+                    processed_images.append({
+                        "filename": file.filename,
+                        "image_base64": encoded_img,
+                        "Fecha de Generación": fecha_generacion,
+                        "Empresa": nombre_empresa,
+                        "Detecciones": detections
+                    })
+        
+                return JSONResponse(content=processed_images)
+        
+            except Exception as e:
+                print(f"An error occurred: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+            
+    @router.post("/upload-image-s3d-instrumentacion", response_class=JSONResponse)
+    async def upload_image_s3d_instrumentaltacion(files: List[UploadFile] = File(...)):
+            try:
+                upload_folder = os.getenv('UPLOAD_FOLDER')
+                os.makedirs(upload_folder, exist_ok=True)
+                processed_images = []
+                detections = []
+        
+                for file in files:
+                    file_path = os.path.join(upload_folder, file.filename)
+        
+                    with open(file_path, "wb") as buffer:
+                        shutil.copyfileobj(file.file, buffer)
+                    print(f"Uploaded image: {file.filename}")
+        
+                    model_path = r'config/data/models/modelo-s3d-ins.pt'
+                    model = YOLO(model_path)
+                    img = cv2.imread(file_path)
+                    if img is None:
+                        raise HTTPException(status_code=400, detail=f"Failed to read image: {file.filename}")
+        
+                    predictions = model.predict(img)
+                    output_img = predictions[0].plot()
+        
+                    retval, buffer = cv2.imencode('.jpg', output_img)
+                    if not retval:
+                        raise HTTPException(status_code=500, detail=f"Failed to encode image: {file.filename}")
+        
+                    print(f"Image {file.filename} processed and encoded successfully")
+                    encoded_img = base64.b64encode(buffer).decode('utf-8')
+                    detections.extend(detectar_objetos(model, [file_path]))
+                    fecha_generacion = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    nombre_empresa = 'SERINGTEC'
 
-        retval, buffer = cv2.imencode('.jpg', output_img)
-        if not retval:
-            raise HTTPException(status_code=500, detail="Failed to encode image")
+                    processed_images.append({
+                        "filename": file.filename,
+                        "image_base64": encoded_img,
+                        "Fecha de Generación": fecha_generacion,
+                        "Empresa": nombre_empresa,
+                        "Detecciones": detections
+                    })
+        
+                return JSONResponse(content=processed_images)
+        
+            except Exception as e:
+                print(f"An error occurred: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
-        print("Image processed and encoded successfully")
+    @router.post("/upload-image-s3d-civil", response_class=JSONResponse)
+    async def upload_image_s3d_civil(files: List[UploadFile] = File(...)):
+            try:
+                upload_folder = os.getenv('UPLOAD_FOLDER')
+                os.makedirs(upload_folder, exist_ok=True)
+                processed_images = []
+                detections = []
+        
+                for file in files:
+                    file_path = os.path.join(upload_folder, file.filename)
+        
+                    with open(file_path, "wb") as buffer:
+                        shutil.copyfileobj(file.file, buffer)
+                    print(f"Uploaded image: {file.filename}")
+        
+                    model_path = r'config/data/models/modelo-s3d-civil.pt'
+                    model = YOLO(model_path)
+                    img = cv2.imread(file_path)
+                    if img is None:
+                        raise HTTPException(status_code=400, detail=f"Failed to read image: {file.filename}")
+        
+                    predictions = model.predict(img)
+                    output_img = predictions[0].plot()
+        
+                    retval, buffer = cv2.imencode('.jpg', output_img)
+                    if not retval:
+                        raise HTTPException(status_code=500, detail=f"Failed to encode image: {file.filename}")
+        
+                    print(f"Image {file.filename} processed and encoded successfully")
+                    encoded_img = base64.b64encode(buffer).decode('utf-8')
+                    detections.extend(detectar_objetos(model, [file_path]))
+                    fecha_generacion = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    nombre_empresa = 'SERINGTEC'
 
-        return StreamingResponse(io.BytesIO(buffer.tobytes()), media_type="image/jpeg")
+                    processed_images.append({
+                        "filename": file.filename,
+                        "image_base64": encoded_img,
+                        "Fecha de Generación": fecha_generacion,
+                        "Empresa": nombre_empresa,
+                        "Detecciones": detections
+                    })
+        
+                return JSONResponse(content=processed_images)
+        
+            except Exception as e:
+                print(f"An error occurred: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+            
+    @router.post("/upload-image-s3d-electrica", response_class=JSONResponse)
+    async def upload_image_s3d_electrica(files: List[UploadFile] = File(...)):
+            try:
+                upload_folder = os.getenv('UPLOAD_FOLDER')
+                os.makedirs(upload_folder, exist_ok=True)
+                processed_images = []
+                detections = []
+        
+                for file in files:
+                    file_path = os.path.join(upload_folder, file.filename)
+        
+                    with open(file_path, "wb") as buffer:
+                        shutil.copyfileobj(file.file, buffer)
+                    print(f"Uploaded image: {file.filename}")
+        
+                    model_path = r'config/data/models/modelo-s3d-electrica.pt'
+                    model = YOLO(model_path)
+                    img = cv2.imread(file_path)
+                    if img is None:
+                        raise HTTPException(status_code=400, detail=f"Failed to read image: {file.filename}")
+        
+                    predictions = model.predict(img)
+                    output_img = predictions[0].plot()
+        
+                    retval, buffer = cv2.imencode('.jpg', output_img)
+                    if not retval:
+                        raise HTTPException(status_code=500, detail=f"Failed to encode image: {file.filename}")
+        
+                    print(f"Image {file.filename} processed and encoded successfully")
+                    encoded_img = base64.b64encode(buffer).decode('utf-8')
+                    detections.extend(detectar_objetos(model, [file_path]))
+                    fecha_generacion = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    nombre_empresa = 'SERINGTEC'
 
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+                    processed_images.append({
+                        "filename": file.filename,
+                        "image_base64": encoded_img,
+                        "Fecha de Generación": fecha_generacion,
+                        "Empresa": nombre_empresa,
+                        "Detecciones": detections
+                    })
+        
+                return JSONResponse(content=processed_images)
+        
+            except Exception as e:
+                print(f"An error occurred: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
-@router.post("/upload-image-s3d", response_class=StreamingResponse)
-async def upload_image_s3d(file: UploadFile = File(...)):
-    """Upload an image, perform YOLO prediction, and return processed image.
-
-    :param file: The uploaded image file.
-    :type file: UploadFile
-    :returns: A streaming response with the processed image in JPEG format.
-    :rtype: StreamingResponse
-    :raises HTTPException: If there is an issue with the image upload, reading, processing, or encoding.
-    """
-    try:
-        upload_folder = os.getenv('UPLOAD_FOLDER')
-        os.makedirs(upload_folder, exist_ok=True)
-        file_path = os.path.join(upload_folder, file.filename)
-
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-        print("filename:", file.filename, "\nfile_path:", file_path)
-
-        model_path = r'config/data/models/model_pid.pt'
-        model = YOLO(model_path)
-        img = cv2.imread(file_path)
-        if img is None:
-            raise HTTPException(status_code=400, detail="Failed to read image")
-
-        predictions = model.predict(img)
-        output_img = predictions[0].plot()
-
-        retval, buffer = cv2.imencode('.jpg', output_img)
-        if not retval:
-            raise HTTPException(status_code=500, detail="Failed to encode image")
-
-        print("Image processed and encoded successfully")
-
-        return StreamingResponse(io.BytesIO(buffer.tobytes()), media_type="image/jpeg")
-
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
-
-@router.post("/upload-image-spi", response_class=StreamingResponse)
-async def upload_image_spi(file: UploadFile = File(...)):
-    """Upload an image, perform YOLO prediction, and return processed image.
-
-    :param file: The uploaded image file.
-    :type file: UploadFile
-    :returns: A streaming response with the processed image in JPEG format.
-    :rtype: StreamingResponse
-    :raises HTTPException: If there is an issue with the image upload, reading, processing, or encoding.
-    """
-    try:
-        upload_folder = os.getenv('UPLOAD_FOLDER')
-        os.makedirs(upload_folder, exist_ok=True)
-        file_path = os.path.join(upload_folder, file.filename)
-
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-        print("filename:", file.filename, "\nfile_path:", file_path)
-
-        model_path = r'config/data/models/model_pid.pt'
-        model = YOLO(model_path)
-        img = cv2.imread(file_path)
-        if img is None:
-            raise HTTPException(status_code=400, detail="Failed to read image")
-
-        predictions = model.predict(img)
-        output_img = predictions[0].plot()
-
-        retval, buffer = cv2.imencode('.jpg', output_img)
-        if not retval:
-            raise HTTPException(status_code=500, detail="Failed to encode image")
-
-        print("Image processed and encoded successfully")
-
-        return StreamingResponse(io.BytesIO(buffer.tobytes()), media_type="image/jpeg")
-
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")

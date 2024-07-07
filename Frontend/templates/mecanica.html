@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
 
-{% block title %}SPI - SmartLink Analytics{% endblock %}
+{% block title %}S3D/Mecanica - SmartLink Analytics{% endblock %}
 
 {% block content %}
-
 
 <div class="container" id="container">
     <h2>Cargar Planimetrías.</h2>
@@ -56,6 +55,5 @@
         <button id="download-pdf-button">Descargar Reporte</button>
     </div>
 </div>
-
-<script src="{{ url_for('static', filename='js/spi/spi.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/mecanica/mecanica.js') }}"></script>
 {% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}S3D - SmartLink Analytics{% endblock %}
+
+{% block content %}
+
+        <div class="main">
+            <div class="contenedor">
+                <a href="/mecanica">
+                    <div class="card">
+                        <div class="card-header-2">
+                            <img src="{{ url_for('static', filename='image/imagen (13).png')}}" alt="VMW">
+                        </div>
+                        <div class="card-body">
+                            <h2 class="card-title">Mecánica</h2>
+                        </div>
+                    </div>
+                </a>
+                <a href="/instrumental">
+                    <div class="card">
+                        <div class="card-header-2">
+                            <img src="{{ url_for('static', filename='image/Image.jpg')}}" alt="VMW">
+                        </div>
+                        <div class="card-body">
+                            <h2 class="card-title">Instrumentación</h2>
+                        </div>
+                    </div>
+                </a>
+                <a href="/civil">
+                    <div class="card">
+                        <div class="card-header-2">
+                            <img src="{{ url_for('static', filename='image/Image (1).png')}}" alt="VMW">
+                        </div>
+                        <div class="card-body">
+                            <h2 class="card-title">Civil</h2>
+                        </div>
+                    </div>
+                </a>
+                <a href="/electrica">
+                    <div class="card">
+                        <div class="card-header-2">
+                            <img src="{{ url_for('static', filename='image/MicrosoftTeams-image.png')}}" alt="VMW">
+                        </div>
+                        <div class="card-body">
+                            <h2 class="card-title">Eléctrica</h2>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+{% endblock %}

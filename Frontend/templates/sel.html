@@ -3,287 +3,60 @@
 {% block title %}SEL - SmartLink Analytics{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-9">
-            <!-- <h3>Demo:</h3> -->
-            <div class="docs-demo">
-                <div class="img-container">
-                    <img src="{{ url_for('static', filename='image/card-img-1.jpg') }}" alt="Picture">
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <!-- <h3>Preview:</h3> -->
-            <div class="">
-                <div class="img-preview preview-lg"></div>
-            </div>
 
-            <!-- <h3>Data:</h3> -->
-            <div class="docs-data">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-prepend">
-                        <label class="input-group-text" for="dataX">X</label>
-                    </span>
-                    <input type="text" class="form-control" id="dataX" placeholder="x">
-                    <span class="input-group-append">
-                        <span class="input-group-text">px</span>
-                    </span>
-                </div>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-prepend">
-                        <label class="input-group-text" for="dataY">Y</label>
-                    </span>
-                    <input type="text" class="form-control" id="dataY" placeholder="y">
-                    <span class="input-group-append">
-                        <span class="input-group-text">px</span>
-                    </span>
-                </div>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-prepend">
-                        <label class="input-group-text" for="dataWidth">Width</label>
-                    </span>
-                    <input type="text" class="form-control" id="dataWidth" placeholder="width">
-                    <span class="input-group-append">
-                        <span class="input-group-text">px</span>
-                    </span>
-                </div>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-prepend">
-                        <label class="input-group-text" for="dataHeight">Height</label>
-                    </span>
-                    <input type="text" class="form-control" id="dataHeight" placeholder="height">
-                    <span class="input-group-append">
-                        <span class="input-group-text">px</span>
-                    </span>
-                </div>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-prepend">
-                        <label class="input-group-text" for="dataRotate">Rotate</label>
-                    </span>
-                    <input type="text" class="form-control" id="dataRotate" placeholder="rotate">
-                    <span class="input-group-append">
-                        <span class="input-group-text">deg</span>
-                    </span>
-                </div>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-prepend">
-                        <label class="input-group-text" for="dataScaleX">ScaleX</label>
-                    </span>
-                    <input type="text" class="form-control" id="dataScaleX" placeholder="scaleX">
-                </div>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-prepend">
-                        <label class="input-group-text" for="dataScaleY">ScaleY</label>
-                    </span>
-                    <input type="text" class="form-control" id="dataScaleY" placeholder="scaleY">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row" id="actions">
-        <div class="col-md-9 docs-buttons">
-            <!-- <h3>Toolbar:</h3> -->
-            <center>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary" data-method="setDragMode" data-option="move"
-                        title="Move">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.setDragMode(&quot;move&quot;)">
-                            <span class="fa fa-arrows-alt"></span>
-                        </span>
-                    </button>
-                    <button type="button" class="btn btn-primary" data-method="setDragMode" data-option="crop"
-                        title="Crop">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.setDragMode(&quot;crop&quot;)">
-                            <span class="fa fa-crop-alt"></span>
-                        </span>
-                    </button>
-                </div>
-
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary" data-method="zoom" data-option="0.1" title="Zoom In">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.zoom(0.1)">
-                            <span class="fa fa-search-plus"></span>
-                        </span>
-                    </button>
-                    <button type="button" class="btn btn-primary" data-method="zoom" data-option="-0.1"
-                        title="Zoom Out">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.zoom(-0.1)">
-                            <span class="fa fa-search-minus"></span>
-                        </span>
-                    </button>
-                </div>
-
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary" data-method="move" data-option="-10"
-                        data-second-option="0" title="Move Left">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.move(-10, 0)">
-                            <span class="fa fa-arrow-left"></span>
-                        </span>
-                    </button>
-                    <button type="button" class="btn btn-primary" data-method="move" data-option="10"
-                        data-second-option="0" title="Move Right">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.move(10, 0)">
-                            <span class="fa fa-arrow-right"></span>
-                        </span>
-                    </button>
-                    <button type="button" class="btn btn-primary" data-method="move" data-option="0"
-                        data-second-option="-10" title="Move Up">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.move(0, -10)">
-                            <span class="fa fa-arrow-up"></span>
-                        </span>
-                    </button>
-                    <button type="button" class="btn btn-primary" data-method="move" data-option="0"
-                        data-second-option="10" title="Move Down">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.move(0, 10)">
-                            <span class="fa fa-arrow-down"></span>
-                        </span>
-                    </button>
-                </div>
-
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary" data-method="rotate" data-option="-45"
-                        title="Rotate Left">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.rotate(-45)">
-                            <span class="fa fa-undo-alt"></span>
-                        </span>
-                    </button>
-                    <button type="button" class="btn btn-primary" data-method="rotate" data-option="45"
-                        title="Rotate Right">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.rotate(45)">
-                            <span class="fa fa-redo-alt"></span>
-                        </span>
-                    </button>
-                </div>
-
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary" data-method="scaleX" data-option="-1"
-                        title="Flip Horizontal">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.scaleX(-1)">
-                            <span class="fa fa-arrows-alt-h"></span>
-                        </span>
-                    </button>
-                    <button type="button" class="btn btn-primary" data-method="scaleY" data-option="-1"
-                        title="Flip Vertical">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.scaleY(-1)">
-                            <span class="fa fa-arrows-alt-v"></span>
-                        </span>
-                    </button>
-                </div>
-
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary" data-method="crop" title="Crop">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.crop()">
-                            <span class="fa fa-check"></span>
-                        </span>
-                    </button>
-                    <button type="button" class="btn btn-primary" data-method="clear" title="Clear">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.clear()">
-                            <span class="fa fa-times"></span>
-                        </span>
-                    </button>
-                </div>
-
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary" data-method="disable" title="Disable">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.disable()">
-                            <span class="fa fa-lock"></span>
-                        </span>
-                    </button>
-                    <button type="button" class="btn btn-primary" data-method="enable" title="
-                    Enable">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.enable()">
-                            <span class="fa fa-unlock"></span>
-                        </span>
-                    </button>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary" data-method="reset" title="Reset">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.reset()">
-                            <span class="fa fa-sync-alt"></span>
-                        </span>
-                    </button>
-
-                    <label class="btn btn-primary btn-upload" for="inputImage" title="Subir archivo de imagen">
-                        <input type="file" class="sr-only" id="inputImage" name="file" accept="image/*">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="Importar imagen con URLs de Blob">
-                            <span class="fa fa-upload"></span>
-                        </span>
-                    </label>
-                    
-                    <button type="button" class="btn btn-primary" data-method="destroy" title="Destroy">
-                        <span class="docs-tooltip" data-toggle="tooltip" title="cropper.destroy()">
-                            <span class="fa fa-power-off"></span>
-                        </span>
-                    </button>
-                </div>
-                <br>
-
-            </center>
-            <!-- Show the cropped image in modal -->
-            <div class="modal fade docs-cropped" id="getCroppedCanvasModal" role="dialog" aria-hidden="true"
-                aria-labelledby="getCroppedCanvasTitle" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="getCroppedCanvasTitle">Cropped</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body"></div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <a class="btn btn-primary" id="download" href="javascript:void(0);"
-                                download="cropped.jpg">Download</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Modal -->
-        </div><!-- /.docs-buttons -->
-
-        <div class="col-md-3 docs-toggles">
-            <a class="btn btn-success btn-block" data-toggle="tooltip" href="#" id="submitBtn" title="Envíe el plano seleccionado">Enviar Plano</a>
-            <!-- <h3>Toggles:</h3> -->
-            <div class="btn-group d-flex flex-nowrap" data-toggle="buttons">
-                <label class="btn btn-primary active">
-                    <input type="radio" class="sr-only" id="aspectRatio1" name="aspectRatio" value="1.7777777777777777">
-                    <span class="docs-tooltip" data-toggle="tooltip" title="aspectRatio: 16 / 9">
-                        16:9
-                    </span>
-                </label>
-                <label class="btn btn-primary">
-                    <input type="radio" class="sr-only" id="aspectRatio2" name="aspectRatio" value="1.3333333333333333">
-                    <span class="docs-tooltip" data-toggle="tooltip" title="aspectRatio: 4 / 3">
-                        4:3
-                    </span>
-                </label>
-                <label class="btn btn-primary">
-                    <input type="radio" class="sr-only" id="aspectRatio3" name="aspectRatio" value="1">
-                    <span class="docs-tooltip" data-toggle="tooltip" title="aspectRatio: 1 / 1">
-                        1:1
-                    </span>
-                </label>
-                <label class="btn btn-primary">
-                    <input type="radio" class="sr-only" id="aspectRatio4" name="aspectRatio" value="0.6666666666666666">
-                    <span class="docs-tooltip" data-toggle="tooltip" title="aspectRatio: 2 / 3">
-                        2:3
-                    </span>
-                </label>
-                <label class="btn btn-primary">
-                    <input type="radio" class="sr-only" id="aspectRatio5" name="aspectRatio" value="NaN">
-                    <span class="docs-tooltip" data-toggle="tooltip" title="aspectRatio: NaN">
-                        Free
-                    </span>
-                </label>
-            </div>
-
-        </div><!-- /.docs-toggles -->
+<div class="container" id="container">
+    <h2>Cargar Planimetrías.</h2>
+    <p class="sub_title">Solo archivos .jpg, .png o .gif</p>
+    <div id="image-gallery" class="image-gallery">
+        <p class="sub_title_2" id="file-select">Arrastra para subir</p>
+        <p class="sub_title">Suelta en esta área tu contenido para que se pueda subir</p>
+        <i class="fa-solid fa-download"></i>
+        <input type="file" id="file-input" multiple>
     </div>
 </div>
-   <!-- sel -->
-   <script src="{{ url_for('static', filename='js/sel/cropper_main.js') }}"></script>
-   <script src="{{ url_for('static', filename='js/sel/sel.js') }}"></script>
+
+<div class="gallery none" id="gallery-container">
+    <div class="large-image" id="gallery">
+        <!-- aquí van las imágenes seleccionadas  -->
+        <div class="floating-btn-container">
+            <button class="floating-btn" id="add-more-images-btn">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="thumbnails-container">
+        <div class="thumbnails" id="thumbnails">
+            <div class="header-seidebar">
+                <div class="header-title">
+                    <h2>Cargar planimetrías</h2>
+                </div>
+                <div class="header-alert">
+                    <p>Para seleccionar más planimetrías se debe hacer click en "+" para cargar archivos adicionales. Los archivos permitidos .jpeg, jpg y .png</p>
+                </div>
+            </div>
+            <button id="send-button">Enviar plano</button>
+        </div>
+    </div>
+</div>
+
+<div class="gallery_response none" id="gallery-response-container">
+    <div class="gallery_response_image" id="large-image_response">
+        <img src="https://via.placeholder.com/800x600" alt="Imagen Grande" id="main-image_response">
+        <div class="floating-btn-container">
+            <button class="floating-btn" id="download-current-image-btn">
+                <i class="fa-solid fa-download"></i>
+            </button>
+        </div>
+    </div>
+    <div class="thumbnails-container_response">
+        <div class="thumbnails_response" id="thumbnails_response">
+            <!-- Las miniaturas se añadirán aquí -->
+        </div>
+        <button id="download-pdf-button">Descargar Reporte</button>
+    </div>
+</div>
+
+
+<script src="{{ url_for('static', filename='js/sel/sel.js') }}"></script>
+
 {% endblock %}
