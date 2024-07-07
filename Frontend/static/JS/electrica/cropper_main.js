@@ -267,7 +267,7 @@ window.onload = function () {
   };
 
   // Import image
-  var inputImage = document.getElementById('inputImage-s3d');
+  var inputImage = document.getElementById('inputImage-s3d-electrica');
 
   if (URL) {
     inputImage.onchange = function () {

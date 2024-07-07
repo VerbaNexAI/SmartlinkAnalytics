@@ -4,7 +4,6 @@ const apiUrlInactivos = 'http://127.0.0.1:8000/api/project/inactive';
 const postUrl = 'http://127.0.0.1:8000/api/view';
 
 // Elementos del DOM
-const table = document.getElementById('example');
 const itemsPerPage = 10;
 
 // Manejo de la respuesta de la API para proyectos
@@ -21,19 +20,21 @@ const handleProjectsResponse = (response, element, paginationId) => {
 // Manejo de la respuesta de la API para solicitud POST
 const handlePostResponse = (response) => {
     if (!response.ok) {
-        throw new Error('Network response was not ok ' + response.statusText);
+        return response.json().then(errorData => {
+            throw new Error(`Network response was not ok: ${response.statusText}. ${errorData.error || ''}`);
+        });
     }
     return response.json();
 };
 
-// Enviar solicitud POST y actualizar la tabla
-const sendPostRequest = (project) => {
+const sendPostRequest = (projectName) => {
+    const projects = [{ project_id: projectName }]; // Ajustar según la estructura esperada
     fetch(postUrl, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ project: project }),
+        body: JSON.stringify({ projects: projects }),
     })
     .then(handlePostResponse)
     .then(data => {
@@ -86,9 +87,9 @@ const renderTable = (data) => {
 const renderProjectsList = (data, element, paginationId) => {
     const items = data.map(item => {
         const listItem = document.createElement('li');
-        listItem.textContent = item.PROYECTO;
+        listItem.textContent = item.name;
         listItem.addEventListener('click', () => {
-            sendPostRequest(item.PROYECTO); // Enviar solo el nombre del proyecto al hacer clic
+            sendPostRequest(item.name); // Enviar solo el nombre del proyecto al hacer clic
         });
         return listItem;
     });
@@ -104,7 +105,7 @@ fetch(apiUrl)
         const errorItem = document.createElement('li');
         errorItem.textContent = 'Error fetching data';
         errorItem.className = 'error';
-        dataList.appendChild(errorItem);
+        document.getElementById('data-list').appendChild(errorItem);
     });
 
 // Fetch datos inactivos
@@ -115,7 +116,7 @@ fetch(apiUrlInactivos)
         const errorItem = document.createElement('li');
         errorItem.textContent = 'Error fetching data';
         errorItem.className = 'error';
-        dataListInactivos.appendChild(errorItem);
+        document.getElementById('data_list_inactive').appendChild(errorItem);
     });
 
 // Paginación
@@ -128,7 +129,12 @@ const paginate = (items, listElement, paginationId) => {
         const start = (page - 1) * itemsPerPage;
         const end = Math.min(page * itemsPerPage, items.length);
         for (let i = start; i < end; i++) {
-            listElement.appendChild(items[i]);
+            const listItem = document.createElement('li');
+            listItem.textContent = items[i].textContent;
+            listItem.addEventListener('click', () => {
+                sendPostRequest(items[i].textContent); // Enviar solo el nombre del proyecto al hacer clic
+            });
+            listElement.appendChild(listItem);
         }
         updatePaginationButtons();
     };
