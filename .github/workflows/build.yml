@@ -23,15 +23,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8 pylint bandit pytest coverage
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: Patch project version
-        run: |
-          version=$(grep VERSION sonar/version.py | cut -d "=" -f 2 | sed "s/[\'\" ]//g")
-          echo "sonar.projectVersion=$version" >> sonar-project.properties
       - name: SonarCloud scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          args: >
-            -Dsonar.verbose=false
+          projectBaseDir: Backend/
