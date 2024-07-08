@@ -1,31 +1,44 @@
-name: build
-on:
-  push:
-    branches:
-      - main # or the name of your main branch
-      - develop
-  pull_request:
-    types: [opened, synchronize, reopened]
+on: push
+name: MainWorkflow
 jobs:
-  scan:
+  build:
+    name: Compile and Test
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Clone Repository
+        uses: actions/checkout@master
+      - name: Setup go
+        uses: actions/setup-go@v1
         with:
-          fetch-depth: 0
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+          go-version: '1.13'
+      - run: make test
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v1
         with:
-          python-version: ${{ matrix.python }}
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install flake8 pylint bandit pytest coverage
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: SonarCloud scan
-        uses: SonarSource/sonarcloud-github-action@master
+          name: code-coverage-report
+          path: bin
+
+  sonarCloudTrigger:
+    needs: build
+    name: SonarCloud Trigger
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@master
+      - name: Download code coverage results
+        uses: actions/download-artifact@v1
+        with:
+          name: code-coverage-report
+          path: bin
+      - name: Analyze with SonarCloud
+        uses: sonarsource/sonarcloud-github-action@master
         env:
-           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          projectBaseDir: ./Backend/
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  integrationTest:
+    needs: build
+    name: Integration Test
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo Should run integration tests.
