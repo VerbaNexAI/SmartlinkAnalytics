@@ -1,14 +1,21 @@
-on: push
-name: MainWorkflow
+name: build
+on:
+  push:
+    branches:
+      - main # or the name of your main branch
+      - develop
+  pull_request:
+    types: [opened, synchronize, reopened]
 jobs:
-  build:
-    name: Compile and Test
+  scan:
     runs-on: ubuntu-latest
     steps:
-      - name: Clone Repository
-        uses: actions/checkout@master
-      - name: Setup go
-        uses: actions/setup-go@v1
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python }}
       - name: Install dependencies
@@ -16,11 +23,5 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8 pylint bandit pytest coverage
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-  sonarCloudTrigger:
-    needs: build
-    name: SonarCloud Trigger
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone Repository
-        uses: actions/checkout@master
+      - name: SonarCloud scan
+        uses: SonarSource/sonarcloud-github-action@master
