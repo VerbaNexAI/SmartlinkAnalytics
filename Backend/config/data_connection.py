@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 # Load environment variables from a .env file
 load_dotenv()
 
+
 class DataConnection:
     server = os.getenv('SERVER')
     db_name = os.getenv('DATABASE')
