@@ -14,8 +14,10 @@ from datetime import datetime
 from pydantic import BaseModel
 from model.sql_transactions import SQLTransactions
 from fastapi.middleware.cors import CORSMiddleware
+from logic.controller import Controller
 
 app = FastAPI()
+controller = Controller()
 
 app.add_middleware(
     CORSMiddleware,
@@ -157,6 +159,7 @@ async def upload_images_sel(files: List[UploadFile] = File(...)):
 
 @app.post("/upload-image-spi", response_class=JSONResponse)
 async def upload_image_spi(files: List[UploadFile] = File(...)):
+    # controller.upload_images()
     try:
         upload_folder = os.getenv('UPLOAD_FOLDER')
         os.makedirs(upload_folder, exist_ok=True)
