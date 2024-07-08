@@ -16,11 +16,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8 pylint bandit pytest coverage
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v1
-        with:
-          name: code-coverage-report
-          path: bin
 
   sonarCloudTrigger:
     needs: build
