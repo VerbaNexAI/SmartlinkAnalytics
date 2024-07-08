@@ -6,27 +6,9 @@ from typing import List, Dict
 from transformers import pipeline
 from huggingface_hub import login
 from config.data_connection import DataConnection
-from pathlib import Path
 
-def detectar_objetos(model, image_paths):
-        detections = []
-        for img_path in image_paths:
-            results = model(img_path)  # Pasar la ruta de la imagen directamente al modelo
-            for result in results:
-                boxes = result.boxes.xyxy.cpu().numpy()  # Coordenadas del cuadro delimitador
-                confidences = result.boxes.conf.cpu().numpy()  # Confianza
-                classes = result.boxes.cls.cpu().numpy()  # Clases del objeto
-                for box, conf, cls in zip(boxes, confidences, classes):
-                    detections.append({
-                        'Imagen': Path(img_path).name,
-                        'Clase': model.names[int(cls)],
-                        'Confianza': float(conf),
-                        'Box_X1': float(box[0]),
-                        'Box_Y1': float(box[1]),
-                        'Box_X2': float(box[2]),
-                        'Box_Y2': float(box[3])
-                    })
-        return detections
+
+
 
 class SQLTransactions:
 
@@ -66,8 +48,6 @@ class SQLTransactions:
             raise HTTPException(
                 status_code=500, detail=f"Error executing the query: {str(e)}"
         )
-        # finally:
-        #     self.cursor.close()  # Close the cursor instead of the connection
 
         return projects
     
@@ -130,7 +110,7 @@ class SQLTransactions:
 
         #cursor = self.cursor()
         try:
-            sql_query = self.read_sql_file(r'config\data\project-inactve.sql')
+            sql_query = self.read_sql_file(r'SmartlinkAnalytics\Backend\config\data\project-inactve.sql')
             self.cursor.execute(sql_query)
             rows = self.cursor.fetchall()
             columns = [column[0] for column in self.cursor.description]

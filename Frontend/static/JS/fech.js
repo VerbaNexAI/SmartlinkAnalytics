@@ -28,23 +28,31 @@ const handlePostResponse = (response) => {
 };
 
 const sendPostRequest = (projectName) => {
-    const projects = [{ project_id: projectName }]; // Ajustar según la estructura esperada
-    fetch(postUrl, {
+    const projects = [projectName]; // Adjust to match the expected structure
+    console.log(projects); // Verify the structure in the console
+
+    fetch('http://127.0.0.1:8000/api/view', { // Ensure the URL is correct
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ projects: projects }),
     })
-    .then(handlePostResponse)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Network response was not ok: ${response.statusText}`);
+        }
+        return response.json();
+    })
     .then(data => {
-        console.log('Success:', data); // Verifica la respuesta del POST en la consola
+        console.log('Success:', data); // Verify the response in the console
         renderTable(data);
     })
     .catch(error => {
         console.error('Error:', error);
     });
 };
+
 
 // Renderizar la tabla con los datos recibidos
 const renderTable = (data) => {

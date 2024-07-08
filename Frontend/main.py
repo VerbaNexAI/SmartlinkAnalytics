@@ -157,11 +157,11 @@ def mecanica():
 
     return render_template('mecanica.html', first_name=first_name, last_name=last_name)
 
-@app.route('/instrumental')
-def instrumental():
-    """Route to display the instrumental page.
+@app.route('/instrumentacion')
+def instrumentacion():
+    """Route to display the instrumentacion page.
 
-    :returns: The instrumental page or redirects to the login page if the user is not logged in.
+    :returns: The instrumentacion page or redirects to the login page if the user is not logged in.
     :rtype: str or Response
     """
     if 'user' not in session:
@@ -171,7 +171,7 @@ def instrumental():
     first_name = session_data['first_name']
     last_name = session_data['last_name']
 
-    return render_template('instrumental.html', first_name=first_name, last_name=last_name)
+    return render_template('instrumentacion.html', first_name=first_name, last_name=last_name)
 
 @app.route('/civil')
 def civil():

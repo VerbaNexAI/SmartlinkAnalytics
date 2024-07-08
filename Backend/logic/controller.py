@@ -8,6 +8,8 @@ import cv2
 from fastapi import HTTPException, UploadFile
 from starlette.responses import JSONResponse
 from ultralytics import YOLO
+from pathlib import Path
+
 
 
 class Controller(object):
@@ -15,7 +17,15 @@ class Controller(object):
     def __init__(self):
         print("Load controller... test")
 
-    def upload_images(self, files: List[UploadFile] = File(...)):
+    def upload_images(self, model_path, files: List[UploadFile]):
+        """
+        Upload and process images using a YOLO model.
+        :param files: List of images to upload.
+        :type files: List[UploadFile]
+        :return: JSON response with processed image data.
+        :rtype: JSONResponse
+        :raises HTTPException: If there is an error during image upload or processing.
+        """
         try:
             upload_folder = os.getenv('UPLOAD_FOLDER')
             os.makedirs(upload_folder, exist_ok=True)
@@ -29,7 +39,6 @@ class Controller(object):
                     shutil.copyfileobj(file.file, buffer)
                 print(f"Uploaded image: {file.filename}")
 
-                model_path = r'config/data/models/modelo-s3d-mecanica.pt'
                 model = YOLO(model_path)
                 img = cv2.imread(file_path)
                 if img is None:
@@ -44,8 +53,8 @@ class Controller(object):
 
                 print(f"Image {file.filename} processed and encoded successfully")
                 encoded_img = base64.b64encode(buffer).decode('utf-8')
-                # detections.extend(detectar_objetos(model, [file_path]))
-                fecha_generacion = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                detections.extend(self.detectar_objetos(model, [file_path]))
+                fecha_generacion = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 nombre_empresa = 'SERINGTEC'
 
                 processed_images.append({
@@ -60,3 +69,42 @@ class Controller(object):
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+        
+
+    def detectar_objetos(self,model, image_paths):
+        """
+        Detect objects in the given images using the specified model.
+
+        Args:
+            model: The object detection model to use for predictions.
+            image_paths (list): List of paths to the images to process.
+
+        Returns:
+            list: A list of dictionaries, each containing details of the detected objects.
+            Each dictionary has the following keys:
+                - 'Imagen': Name of the image file.
+                - 'Clase': Detected object class.
+                - 'Confianza': Confidence score of the detection.
+                - 'Box_X1': X-coordinate of the top-left corner of the bounding box.
+                - 'Box_Y1': Y-coordinate of the top-left corner of the bounding box.
+                - 'Box_X2': X-coordinate of the bottom-right corner of the bounding box.
+                - 'Box_Y2': Y-coordinate of the bottom-right corner of the bounding box.
+        """
+        detections = []
+        for img_path in image_paths:
+            results = model(img_path)  # Pasar la ruta de la imagen directamente al modelo
+            for result in results:
+                boxes = result.boxes.xyxy.cpu().numpy()  # Coordenadas del cuadro delimitador
+                confidences = result.boxes.conf.cpu().numpy()  # Confianza
+                classes = result.boxes.cls.cpu().numpy()  # Clases del objeto
+                for box, conf, cls in zip(boxes, confidences, classes):
+                    detections.append({
+                        'Imagen': Path(img_path).name,
+                        'Clase': model.names[int(cls)],
+                        'Confianza': float(conf),
+                        'Box_X1': float(box[0]),
+                        'Box_Y1': float(box[1]),
+                        'Box_X2': float(box[2]),
+                        'Box_Y2': float(box[3])
+                    })
+        return detections

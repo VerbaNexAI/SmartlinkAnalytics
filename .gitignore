@@ -1,2 +1,5 @@
 env
 .env
+frontend/static/assets
+Backend
+Backend/config/data/models
