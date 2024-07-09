@@ -71,38 +71,49 @@ export function initializeImageGallery(url, herramienta) {
             alert('Error al enviar las imágenes:', error);
         }
     });
+// Función para mostrar las imágenes procesadas
+function displayProcessedImages(images) {
 
-    // Función para mostrar las imágenes procesadas
-    function displayProcessedImages(images) {
-        thumbnailsResponse.innerHTML = '';
 
-        images.forEach(imageData => {
-            const img = document.createElement('img');
-            img.src = `data:image/jpeg;base64, ${imageData.image_base64}`;
-            img.alt = 'Imagen procesada';
-            img.className = 'thumbnail';
-            img.onclick = () => changeImage(img.src);
+    // Limpiar la respuesta de miniaturas
+    thumbnailsResponse.innerHTML = '';
 
-            const thumbnailItem = document.createElement('div');
-            thumbnailItem.className = 'thumbnail-item';
-            thumbnailItem.appendChild(img);
+    // Iterar sobre las imágenes y crear los elementos necesarios
+    images.forEach(imageData => {
+        const img = document.createElement('img');
+        img.src = `data:image/jpeg;base64,${imageData.image_base64}`;
+        img.alt = 'Imagen procesada';
+        img.className = 'thumbnail';
+        img.onclick = () => changeImage(img.src);
 
-            thumbnailsResponse.appendChild(thumbnailItem);
+        const thumbnailItem = document.createElement('div');
+        thumbnailItem.className = 'thumbnail-item';
+        thumbnailItem.appendChild(img);
 
-            if (!mainImageResponse.src || mainImageResponse.src === 'https://via.placeholder.com/800x600') {
-                mainImageResponse.src = img.src;
-            }
-        });
+        thumbnailsResponse.appendChild(thumbnailItem);
 
-        container.classList.add('none');
-        galleryContainer.classList.add('none');
-        galleryResponseContainer.classList.remove('none');
-    }
+        // Establecer la imagen principal si aún no está definida
+        if (!mainImageResponse.src || mainImageResponse.src === '#') {
+            mainImageResponse.src = img.src;
+        }
+    });
 
-    // Función para cambiar la imagen principal
-    function changeImage(imageSrc) {
+    // Mostrar y ocultar los contenedores según sea necesario
+    container.classList.add('none');
+    galleryContainer.classList.add('none');
+    galleryResponseContainer.classList.remove('none');
+}
+
+// Función para cambiar la imagen principal
+function changeImage(imageSrc) {
+    const mainImageResponse = document.getElementById('main-image_response');
+    if (mainImageResponse) {
         mainImageResponse.src = imageSrc;
+    } else {
+        console.error("El elemento 'main-image_response' no existe en el DOM.");
     }
+}
+
 
     // Agregar más imágenes al hacer clic en el botón correspondiente
     addMoreImagesBtn.addEventListener('click', () => fileInput.click());
