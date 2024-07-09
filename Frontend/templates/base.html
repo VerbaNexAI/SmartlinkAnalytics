@@ -23,9 +23,9 @@
             <div class="logo">SmartLink <span class="span-logo">Analytics</span></div>
             <div class="profile">
                 <a href="/menu" class="home-link"><i class="fa-solid fa-house"></i></a>
-                <div class="profile-circle" onclick="toggleMenu()">
+                <div class="profile-circle" onclick="toggleMenu()" onKeyPress="handleKeyPress(event)">
                     <img src="{{ url_for('static', filename='image/descarga.png') }}" alt="">
-                </div>
+                </div>   
                 <div class="dropdown-content" id="subDropdown">
                     <div class="sub-dropdown-content">
                         <div class="user-info">
