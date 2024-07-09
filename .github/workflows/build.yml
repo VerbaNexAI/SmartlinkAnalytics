@@ -26,4 +26,4 @@ jobs:
       - name: SonarCloud scan
         uses: SonarSource/sonarcloud-github-action@master
         with:
-          projectBaseDir: **/Backend/**, **/Frontend/**
+          projectBaseDir: .
