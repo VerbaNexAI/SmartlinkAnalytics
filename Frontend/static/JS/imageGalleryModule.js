@@ -115,9 +115,12 @@ export function initializeImageGallery(url, herramienta) {
         link.click();
     });
 
-    downloadPdfButton.addEventListener('click', () => {
+    downloadPdfButton.addEventListener('click', async () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
+
+        doc.setFontSize(20);
+        doc.text('REPORTE DE VALIDACIÓN DE CONSISTENCIA', 20, 20);
 
         for (let i = 0; i < processedImages.length; i++) {
             const imageData = processedImages[i];
@@ -125,8 +128,10 @@ export function initializeImageGallery(url, herramienta) {
 
             const fechaGeneracion = imageData['Fecha de Generación'];
             const empresa = imageData['Empresa'];
+            const detecciones = imageData['Detecciones'];
+
             const imageFileName = imageData.filename;
-            const tableData = imageData.detections
+            const tableData = detecciones
                 .filter(deteccion => deteccion.Imagen === imageFileName)
                 .map(deteccion => [
                     deteccion.Clase,
@@ -145,7 +150,7 @@ export function initializeImageGallery(url, herramienta) {
                 startY: 30,
                 head: [['Fecha de Generación', 'Herramienta', 'Empresa', 'Nombre de la imagen']],
                 body: [
-                    [fechaGeneracion, herramienta, empresa, imageFileName]
+                    [fechaGeneracion, 'Civil', empresa, imageData.filename]
                 ]
             });
 
@@ -164,6 +169,8 @@ export function initializeImageGallery(url, herramienta) {
 
         doc.save('REPORTE DE VALIDACIÓN DE CONSISTENCIA.pdf');
     });
+    
+    
 
  function handleFiles(files) {
     for (const file of files) {

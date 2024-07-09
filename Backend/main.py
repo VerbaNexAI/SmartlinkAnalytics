@@ -146,7 +146,7 @@ async def upload_image_spi(files: List[UploadFile] = File(...)):
     Returns:
         JSONResponse: A JSON response with the result of the upload.
     """
-    model_path = r'config/data/models/model_pid.pt'
+    model_path = r'config/data/models/model_spi.pt'
     response = controller.upload_images(model_path, files)
     return response
 

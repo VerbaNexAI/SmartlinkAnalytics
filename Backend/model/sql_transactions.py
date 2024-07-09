@@ -36,10 +36,8 @@ class SQLTransactions:
             raise HTTPException(
                 status_code=500, detail="Could not connect to the database")
         try:
-            # Read the .sql file
             sql_query = self.read_sql_file(r'config\data\project-active.sql')
 
-            # Execute the query from the .sql file
             self.cursor.execute(sql_query)
             rows = self.cursor.fetchall()
             columns = [column[0] for column in self.cursor.description]
@@ -84,8 +82,7 @@ class SQLTransactions:
         """
         if not self.cursor:
             raise HTTPException(status_code=500, detail="Could not connect to the database")
-
-        # cursor = self.cursor()
+        
         try:
             sql_query = self.read_sql_file(r'config\data\project.sql')
             self.cursor.execute(sql_query)
@@ -108,7 +105,6 @@ class SQLTransactions:
                 status_code=500, detail="Could not connect to the database"
             )
 
-        #cursor = self.cursor()
         try:
             sql_query = self.read_sql_file(r'SmartlinkAnalytics\Backend\config\data\project-inactve.sql')
             self.cursor.execute(sql_query)

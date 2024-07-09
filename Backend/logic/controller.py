@@ -92,11 +92,11 @@ class Controller(object):
         """
         detections = []
         for img_path in image_paths:
-            results = model(img_path)  # Pasar la ruta de la imagen directamente al modelo
+            results = model(img_path)  
             for result in results:
-                boxes = result.boxes.xyxy.cpu().numpy()  # Coordenadas del cuadro delimitador
-                confidences = result.boxes.conf.cpu().numpy()  # Confianza
-                classes = result.boxes.cls.cpu().numpy()  # Clases del objeto
+                boxes = result.boxes.xyxy.cpu().numpy() 
+                confidences = result.boxes.conf.cpu().numpy()  
+                classes = result.boxes.cls.cpu().numpy()  
                 for box, conf, cls in zip(boxes, confidences, classes):
                     detections.append({
                         'Imagen': Path(img_path).name,
