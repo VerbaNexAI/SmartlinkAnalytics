@@ -15,8 +15,6 @@
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/menu.css') }}">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.15/jspdf.plugin.autotable.min.js"></script>
 </head>
 
 <body>
@@ -56,6 +54,9 @@
 
 
     {% endblock %}
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.15/jspdf.plugin.autotable.min.js"></script>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
