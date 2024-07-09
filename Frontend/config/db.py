@@ -8,18 +8,18 @@ load_dotenv()
 def conn_db():
     server = os.getenv('SERVER')
     bd_name = os.getenv('DATABASE')
-    usuario = os.getenv('USER')
-    contraseña = os.getenv('PASSWORD')
+    user = os.getenv('USER')
+    password = os.getenv('PASSWORD')
 
-    print(f'Intentando conectar a la base de datos con: SERVER={server}, DATABASE={bd_name}, USER={usuario}')
+    print(f'Intentando conectar a la base de datos con: SERVER={server}, DATABASE={bd_name}, USER={user}')
 
     try:
         conexion = pyodbc.connect(
             'DRIVER={ODBC Driver 17 for SQL Server};'
             f'SERVER={server};'
             f'DATABASE={bd_name};'
-            f'UID={usuario};'
-            f'PWD={contraseña}'
+            f'UID={user};'
+            f'PWD={password}'
         )
         print('CONEXION EXITOSA')
         return conexion
