@@ -7,7 +7,6 @@ body{
     height: 100vh;
     display: flex;
     flex-direction: column;
-    font-family: 'Roboto', sans-serif;
     background-color: rgba(255, 255, 255, 0.934);
     font-family: 'Open Sans', 'Helvetica Neue', sans-serif;
     font-weight: 300;
@@ -138,12 +137,14 @@ body{
 
 /* Estilos main */
 .main {
-    background-color: #e2e2e2;
-    padding: 10px 20px;
-    border-radius: 10px;
-    margin-top: 20px;
     display: flex;
+    flex: 1;
     justify-content: center;
+    padding: 10px 20px;
+    margin: 5px;
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 15px;
+    backdrop-filter: blur;
 }
 .contenedor {
     display: flex;
@@ -193,13 +194,7 @@ body{
 }
 
 
-.main{
-    background-color: rgba(255, 255, 255, 0);
-    flex: 1;
-    border-radius: 15px;
-    margin: 5px;
-    backdrop-filter: blur;
-}
+
 
 /* estilos carga de planimetrias */
 
@@ -277,7 +272,6 @@ h2 {
 }
 
 .img-container {
-    display: inline-block;
     position: relative;
     margin: 10px;
     border: 1px solid #ccc;
@@ -307,7 +301,6 @@ h2 {
     font-size: 20px;
     z-index: 10;
 }
-
 
 
 /* Estilos del panel de imagnes */
@@ -407,15 +400,7 @@ h2 {
 
 
 
-.delete-icon {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    color: red;
-    cursor: pointer;
-    background: #fff;
-    border-radius: 50%;
-}
+
 
 .floating-btn-container {
     position: absolute;
