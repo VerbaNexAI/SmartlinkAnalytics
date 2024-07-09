@@ -273,17 +273,20 @@ h2 {
 
 .img-container {
     position: relative;
-    margin: 10px;
-    border: 1px solid #ccc;
     padding: 10px;
     background: #fff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    border-radius: 4px;
-    width: 200px; 
-    height: 170px; 
     overflow: hidden; 
     display: flex;
+    margin: 10px;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 4px;
+    width: 150px;
+    height: 100px; 
+    overflow: hidden; 
 }
+
+
 
 .img-container img {
     display: block;
@@ -382,25 +385,6 @@ h2 {
     margin: 20px;
     width: 90%;
 }
-#send-button:hover{
-    background-color: rgb(133, 149, 255);
-}
-
-.img-container {
-    margin: 10px;
-    border: 1px solid #ccc;
-    padding: 10px;
-    background: #fff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    border-radius: 4px;
-    width: 150px;
-    height: 100px; 
-    overflow: hidden; 
-}
-
-
-
-
 
 .floating-btn-container {
     position: absolute;
