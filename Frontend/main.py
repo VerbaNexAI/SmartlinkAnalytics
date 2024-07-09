@@ -6,7 +6,7 @@ from config.db_queries import authenticate_user, check_email_exists, register_ne
 app = Flask(__name__)
 app.secret_key = os.getenv('KEY')
 
-@app.route("/", methods=['POST'])
+@app.route("/", methods=['GET', 'POST'])
 def login():
     """Route to display the login page and handle login.
 
@@ -30,7 +30,7 @@ def login():
 
     return render_template("login.html")
 
-@app.route("/register", methods=["POST"])
+@app.route("/register", methods=["GET", "POST"])
 def register():
     """Route to display the registration page and handle user registration.
 
@@ -217,7 +217,7 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
 
 
 
