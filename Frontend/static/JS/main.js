@@ -20,12 +20,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    document.addEventListener('click', function (event) {
-        const isClickInsideSidebar = document.querySelector('.sidebar').contains(event.target);
-        if (!isClickInsideSidebar) {
-            closeAllSubmenus();
-        }
-    });
 
     // Evitar que los clics en la paginación afecten al menú
     const paginationElements = [

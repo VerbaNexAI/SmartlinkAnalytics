@@ -71,49 +71,38 @@ export function initializeImageGallery(url, herramienta) {
             alert('Error al enviar las imágenes:', error);
         }
     });
-// Función para mostrar las imágenes procesadas
-function displayProcessedImages(images) {
 
+    // Función para mostrar las imágenes procesadas
+    function displayProcessedImages(images) {
+        thumbnailsResponse.innerHTML = '';
 
-    // Limpiar la respuesta de miniaturas
-    thumbnailsResponse.innerHTML = '';
+        images.forEach(imageData => {
+            const img = document.createElement('img');
+            img.src = `data:image/jpeg;base64, ${imageData.image_base64}`;
+            img.alt = 'Imagen procesada';
+            img.className = 'thumbnail';
+            img.onclick = () => changeImage(img.src);
 
-    // Iterar sobre las imágenes y crear los elementos necesarios
-    images.forEach(imageData => {
-        const img = document.createElement('img');
-        img.src = `data:image/jpeg;base64,${imageData.image_base64}`;
-        img.alt = 'Imagen procesada';
-        img.className = 'thumbnail';
-        img.onclick = () => changeImage(img.src);
+            const thumbnailItem = document.createElement('div');
+            thumbnailItem.className = 'thumbnail-item';
+            thumbnailItem.appendChild(img);
 
-        const thumbnailItem = document.createElement('div');
-        thumbnailItem.className = 'thumbnail-item';
-        thumbnailItem.appendChild(img);
+            thumbnailsResponse.appendChild(thumbnailItem);
 
-        thumbnailsResponse.appendChild(thumbnailItem);
+            if (!mainImageResponse.src || mainImageResponse.src == 'https://via.placeholder.com/800x600') {
+                mainImageResponse.src = img.src;
+            }
+        });
 
-        // Establecer la imagen principal si aún no está definida
-        if (!mainImageResponse.src || mainImageResponse.src === '#') {
-            mainImageResponse.src = img.src;
-        }
-    });
-
-    // Mostrar y ocultar los contenedores según sea necesario
-    container.classList.add('none');
-    galleryContainer.classList.add('none');
-    galleryResponseContainer.classList.remove('none');
-}
-
-// Función para cambiar la imagen principal
-function changeImage(imageSrc) {
-    const mainImageResponse = document.getElementById('main-image_response');
-    if (mainImageResponse) {
-        mainImageResponse.src = imageSrc;
-    } else {
-        console.error("El elemento 'main-image_response' no existe en el DOM.");
+        container.classList.add('none');
+        galleryContainer.classList.add('none');
+        galleryResponseContainer.classList.remove('none');
     }
-}
 
+    // Función para cambiar la imagen principal
+    function changeImage(imageSrc) {
+        mainImageResponse.src = imageSrc;
+    }
 
     // Agregar más imágenes al hacer clic en el botón correspondiente
     addMoreImagesBtn.addEventListener('click', () => fileInput.click());
@@ -126,23 +115,20 @@ function changeImage(imageSrc) {
         link.click();
     });
 
-    downloadPdfButton.addEventListener('click', async () => {
+    downloadPdfButton.addEventListener('click', () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-
-        doc.setFontSize(20);
-        doc.text('REPORTE DE VALIDACIÓN DE CONSISTENCIA', 20, 20);
-
+    
         for (let i = 0; i < processedImages.length; i++) {
             const imageData = processedImages[i];
             const base64Img = `data:image/jpeg;base64,${imageData.image_base64}`;
-
+    
             const fechaGeneracion = imageData['Fecha de Generación'];
             const empresa = imageData['Empresa'];
-            const detecciones = imageData['Detecciones'];
-
             const imageFileName = imageData.filename;
-            const tableData = detecciones
+    
+            // Verificar si detections está definido y es un array
+            const tableData = (imageData.detections || [])
                 .filter(deteccion => deteccion.Imagen === imageFileName)
                 .map(deteccion => [
                     deteccion.Clase,
@@ -152,32 +138,32 @@ function changeImage(imageSrc) {
                     deteccion.Box_X2.toFixed(3),
                     deteccion.Box_Y2.toFixed(3)
                 ]);
-
+    
             if (i > 0) {
                 doc.addPage();
             }
-
+    
             doc.autoTable({
                 startY: 30,
                 head: [['Fecha de Generación', 'Herramienta', 'Empresa', 'Nombre de la imagen']],
                 body: [
-                    [fechaGeneracion, 'Civil', empresa, imageData.filename]
+                    [fechaGeneracion, herramienta, empresa, imageFileName]
                 ]
             });
-
+    
             doc.addImage(base64Img, 'JPEG', 20, 60, 160, 120);
-
+    
             const imageHeight = 120;
             const imageStartY = 60;
             const tableStartY = imageStartY + imageHeight + 10;
-
+    
             doc.autoTable({
                 startY: tableStartY,
                 head: [['Clase', 'Confianza', 'Box_X1', 'Box_Y1', 'Box_X2', 'Box_Y2']],
                 body: tableData,
             });
         }
-
+    
         doc.save('REPORTE DE VALIDACIÓN DE CONSISTENCIA.pdf');
     });
     
