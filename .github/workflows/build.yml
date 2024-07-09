@@ -24,8 +24,7 @@ jobs:
           pip install flake8 pylint bandit pytest coverage
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: SonarCloud scan
-        uses: Sonarsource/sonarqube-scan-action@master
+        uses: sonarsource/sonarcloud-github-action@master
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_HOST_URL: https://sonarcloud.io
+          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
