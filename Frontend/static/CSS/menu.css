@@ -275,7 +275,6 @@ h2 {
     position: relative;
     padding: 10px;
     background: #fff;
-    overflow: hidden; 
     display: flex;
     margin: 10px;
     border: 1px solid #ccc;
@@ -313,9 +312,7 @@ h2 {
     justify-content: space-between;
     width: 100%;
 }
-.none {
-    display: none;
-}
+
 .large-image {
     display: flex;
     flex-wrap: wrap;
