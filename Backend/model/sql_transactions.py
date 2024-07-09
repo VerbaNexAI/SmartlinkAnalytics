@@ -70,7 +70,7 @@ class SQLTransactions:
             raise HTTPException(status_code=500, detail=f"Error executing the query: {str(e)}")
         
 
-    def get_project(self, project_name: str) -> List[Dict]:
+    def get_project(self) -> List[Dict]:
         """
         Retrieve projects from the database based on project name.
 

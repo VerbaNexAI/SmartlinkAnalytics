@@ -23,9 +23,9 @@
             <div class="logo">SmartLink <span class="span-logo">Analytics</span></div>
             <div class="profile">
                 <a href="/menu" class="home-link"><i class="fa-solid fa-house"></i></a>
-                <div class="profile-circle" onclick="toggleMenu()" onKeyPress="handleKeyPress(event)">
+                <div class="profile-circle" onclick="toggleMenu()" onKeyUp="handleKeyUp(event)">
                     <img src="{{ url_for('static', filename='image/descarga.png') }}" alt="">
-                </div>   
+                </div>                  
                 <div class="dropdown-content" id="subDropdown">
                     <div class="sub-dropdown-content">
                         <div class="user-info">
@@ -58,7 +58,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.15/jspdf.plugin.autotable.min.js"></script>
 
-    <!-- <script src="{{ url_for('static', filename='js/main.js') }}"></script> -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 
 </body>
