@@ -1,5 +1,6 @@
 env
 .env
-frontend/static/assets
-Backend
-Backend/config/data/models
+assets
+models
+uploads
+__pycache__
