@@ -164,34 +164,36 @@ export function initializeImageGallery(url, herramienta) {
 
         doc.save('REPORTE DE VALIDACIÓN DE CONSISTENCIA.pdf');
     });
-    function handleFiles(files) {
-        for (const file of files) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const imgContainer = document.createElement('div');
-                imgContainer.className = 'img-container';
-    
-                const img = document.createElement('img');
-                img.src = event.target.result;
-    
-                const deleteIcon = document.createElement('i');
-                deleteIcon.className = 'fas fa-times-circle delete-icon';
-                deleteIcon.addEventListener('click', () => {
-                    imgContainer.remove();
-                    updateImageSizes();
-                });
-    
-                imgContainer.appendChild(img);
-                imgContainer.appendChild(deleteIcon);
-                gallery.appendChild(imgContainer);
+
+ function handleFiles(files) {
+    for (const file of files) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const imgContainer = document.createElement('div');
+            imgContainer.className = 'img-container';
+
+            const img = document.createElement('img');
+            img.src = event.target.result;
+
+            const deleteIcon = document.createElement('i');
+            deleteIcon.className = 'fas fa-times-circle delete-icon';
+            deleteIcon.addEventListener('click', () => {
+                imgContainer.remove();
                 updateImageSizes();
-            }
-            reader.readAsDataURL(file);
-            allSelectedImages.push(file);
-        }
-        container.classList.add('none');
-        galleryContainer.classList.remove('none');
+            });
+
+            imgContainer.appendChild(img);
+            imgContainer.appendChild(deleteIcon);
+            gallery.appendChild(imgContainer);
+            updateImageSizes();
+        };
+        reader.readAsDataURL(file);
+        allSelectedImages.push(file);
     }
+    container.classList.add('none');
+    galleryContainer.classList.remove('none');
+}
+
     
 
     function updateImageSizes() {
