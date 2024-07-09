@@ -141,6 +141,10 @@ body{
     background-color: #333;
     width: 270px;
     padding: 20px;
+    background-color: rgb(255, 166, 0);
+    min-width: 320px;
+    border-radius: 15px;
+    margin: 5px;
 }
 
 .sidebar-link{
@@ -163,7 +167,9 @@ body{
     margin-bottom: 10px;
     position: relative;
     list-style: none;
+    transition: background-color 0.3s ease-in-out;
 }
+
 
 .sidebar-menu li a {
     color: white;
@@ -240,7 +246,11 @@ body{
     padding: 10px 20px;
     border-radius: 10px;
     margin-top: 20px;
-    overflow: hidden; /* Para asegurar que cualquier contenido que sobresalga se gestione correctamente */
+    overflow: hidden; 
+    background-color: rgb(215, 215, 215);
+    flex: 1;
+    border-radius: 15px;
+    margin: 5px;
 }
 
 .main-title {
@@ -319,9 +329,7 @@ body{
     animation: fadeIn 2s ease;
 }
 
-.sidebar-menu li {
-    transition: background-color 0.3s ease-in-out;
-}
+
 
 .sidebar-menu li:hover {
   font-weight:700;
@@ -341,12 +349,7 @@ body{
 /* Animaciones */
 
 
-.main{
-    background-color: rgb(215, 215, 215);
-    flex: 1;
-    border-radius: 15px;
-    margin: 5px;
-}
+
 
 .container {
     display: flex;
@@ -354,12 +357,6 @@ body{
     
 }
 
-.sidebar{
-    background-color: rgb(255, 166, 0);
-    min-width: 320px;
-    border-radius: 15px;
-    margin: 5px;
-}
 
 .dataTables_length{
     display: none;
