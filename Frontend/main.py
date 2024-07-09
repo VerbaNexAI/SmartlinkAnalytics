@@ -3,10 +3,10 @@ from config.db import conn_db
 from flask import Flask, render_template, redirect, request, url_for, session, flash
 from config.db_queries import authenticate_user, check_email_exists, register_new_user
 
-app = Flask(__name__, static_folder='static')
+app = Flask(__name__)
 app.secret_key = os.getenv('KEY')
 
-@app.route("/", methods=['GET', 'POST'])
+@app.route("/", methods=['POST'])
 def login():
     """Route to display the login page and handle login.
 
