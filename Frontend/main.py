@@ -30,7 +30,7 @@ def login():
 
     return render_template("login.html")
 
-@app.route("/register", methods=["GET", "POST"])
+@app.route("/register", methods=["POST"])
 def register():
     """Route to display the registration page and handle user registration.
 
