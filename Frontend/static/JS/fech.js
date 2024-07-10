@@ -1,6 +1,5 @@
 // URLs de la API
 const apiUrl = 'http://192.168.0.226:5200/api/project';
-const apiUrlInactivos = 'http://192.168.0.226:5200/api/project/inactive';
 const postUrl = 'http://192.168.0.226:5200/api/view';
 
 // Elementos del DOM
@@ -114,17 +113,6 @@ fetch(apiUrl)
         errorItem.textContent = 'Error fetching data';
         errorItem.className = 'error';
         document.getElementById('data-list').appendChild(errorItem);
-    });
-
-// Fetch datos inactivos
-fetch(apiUrlInactivos)
-    .then(response => handleProjectsResponse(response, document.getElementById('data_list_inactive'), 'inactive'))
-    .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-        const errorItem = document.createElement('li');
-        errorItem.textContent = 'Error fetching data';
-        errorItem.className = 'error';
-        document.getElementById('data_list_inactive').appendChild(errorItem);
     });
 
 // Paginación

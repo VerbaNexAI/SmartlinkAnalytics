@@ -69,8 +69,7 @@ class SQLTransactions:
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error executing the query: {str(e)}")
         
-
-    def get_project(self) -> List[Dict]:
+    def get_project(self, project_name: str) -> List[Dict]:
         """
         Retrieve projects from the database based on project name.
 
@@ -85,7 +84,7 @@ class SQLTransactions:
         
         try:
             sql_query = self.read_sql_file(r'config\data\project.sql')
-            self.cursor.execute(sql_query)
+            self.cursor.execute(sql_query, (project_name,))  # Note the comma to make it a tuple
             columns = [column[0] for column in self.cursor.description]
             projects = [dict(zip(columns, row)) for row in self.cursor.fetchall()]
         except Exception as e:

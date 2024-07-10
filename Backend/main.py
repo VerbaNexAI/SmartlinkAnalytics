@@ -86,9 +86,8 @@ async def post_project_content(projects: ProjectContent) -> List[dict]:
         HTTPException: If there is an error retrieving or processing the project data.
     """
     try:
-        logging.info(f"Received projects: {projects}")
-        project_data = projects
-        projects_info = [sql_trans.get_project(p) for p in project_data]
+        logging.info(f"Received projects: {projects.projects}")
+        projects_info = [sql_trans.get_project(p) for p in projects.projects]
 
         if projects_info:
             logging.info(f"Projects found: {projects_info}")
@@ -111,7 +110,7 @@ async def post_project_content(projects: ProjectContent) -> List[dict]:
             logging.info(f"Combined result: {combinado}")
             return combinado
         else:
-            logging.warning(f"Projects not found for: {projects}")
+            logging.warning(f"Projects not found for: {projects.projects}")
             raise HTTPException(status_code=404, detail="Projects not found")
     except HTTPException as http_exc:
         logging.error(f"HTTP exception occurred: {http_exc.detail}")

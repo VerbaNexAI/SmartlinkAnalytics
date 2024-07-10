@@ -60,7 +60,7 @@ def register():
             else:
                 flash("Error registering user.", 'error')
 
-    return render_template("login.html")
+    return render_template("registro.html")
 
 @app.route('/menu')
 def menu():

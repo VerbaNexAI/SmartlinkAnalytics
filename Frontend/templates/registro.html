@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SmartLink Analytics</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/registro.css') }}">
 </head>
 
 <body>
@@ -13,19 +13,19 @@
         <div class="header-container">
             <div class="logo">SmartLink <span class="span-logo">Analytics</span></div>
             <div class="profile">
-                <a href="/register" class="Sign-Up">Sign-Up</a>                                              
+                <a href="/" class="Sign-Up">Sign-Up</a>
             </div>
         </div>
     </header>
     <div class="container">
-        <div class="container_logo">
-            <div class="logo">SmartLink <br> <span class="span-logo">Analytics</span></div>
-        </div>
-        <form action="/" method="post" class="container_form">
-            <div class="container_form_title">Login</div>
-            <input type="email" placeholder="Email" name="email" required>
+        <form class="container_form" action="/register" method="post">
+            <div class="container_form_title">Register</div>
+            <input type="text" placeholder="Nombre" name="first_name" required>
+            <input type="text" placeholder="Apellido" name="last_name" required>
+            <input type="email" placeholder="Correo" name="email" required>
             <input type="password" placeholder="Contraseña" name="password" required>
-            
+            <input type="password" placeholder="Confirmar Contraseña" name="confirm_password" required>
+
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
             {% for category, message in messages %}
@@ -35,13 +35,15 @@
             {% endfor %}
             {% endif %}
             {% endwith %}
+
             <div class="container_form_btn">
-                <P>Forgot Password?</P>
                 <button type="submit" class="get-into"> Get into <i class="fa-solid fa-arrow-right"></i></button>
             </div>
         </form>
+        <div class="container_logo">
+            <div class="logo">SmartLink <br> <span class="span-logo">Analytics</span></div>
+        </div>
     </div>
-
 
 
 </body>
