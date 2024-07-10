@@ -1,7 +1,7 @@
 // URLs de la API
-const apiUrl = 'http://127.0.0.1:8000/api/project';
-const apiUrlInactivos = 'http://127.0.0.1:8000/api/project/inactive';
-const postUrl = 'http://127.0.0.1:8000/api/view';
+const apiUrl = 'http://192.168.0.226:5200/api/project';
+const apiUrlInactivos = 'http://192.168.0.226:5200/api/project/inactive';
+const postUrl = 'http://192.168.0.226:5200/api/view';
 
 // Elementos del DOM
 const itemsPerPage = 10;
@@ -31,7 +31,7 @@ const sendPostRequest = (projectName) => {
     const projects = [projectName]; // Adjust to match the expected structure
     console.log(projects); // Verify the structure in the console
 
-    fetch('http://127.0.0.1:8000/api/view', { // Ensure the URL is correct
+    fetch('http://192.168.0.226:5200/api/view', { // Ensure the URL is correct
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

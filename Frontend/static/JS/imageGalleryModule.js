@@ -115,20 +115,23 @@ export function initializeImageGallery(url, herramienta) {
         link.click();
     });
 
-    downloadPdfButton.addEventListener('click', () => {
+    downloadPdfButton.addEventListener('click', async () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-    
+
+        doc.setFontSize(20);
+        doc.text('REPORTE DE VALIDACIÓN DE CONSISTENCIA', 20, 20);
+
         for (let i = 0; i < processedImages.length; i++) {
             const imageData = processedImages[i];
             const base64Img = `data:image/jpeg;base64,${imageData.image_base64}`;
-    
+
             const fechaGeneracion = imageData['Fecha de Generación'];
             const empresa = imageData['Empresa'];
+            const detecciones = imageData['Detecciones'];
+
             const imageFileName = imageData.filename;
-    
-            // Verificar si detections está definido y es un array
-            const tableData = (imageData.detections || [])
+            const tableData = detecciones
                 .filter(deteccion => deteccion.Imagen === imageFileName)
                 .map(deteccion => [
                     deteccion.Clase,
@@ -138,32 +141,32 @@ export function initializeImageGallery(url, herramienta) {
                     deteccion.Box_X2.toFixed(3),
                     deteccion.Box_Y2.toFixed(3)
                 ]);
-    
+
             if (i > 0) {
                 doc.addPage();
             }
-    
+
             doc.autoTable({
                 startY: 30,
                 head: [['Fecha de Generación', 'Herramienta', 'Empresa', 'Nombre de la imagen']],
                 body: [
-                    [fechaGeneracion, herramienta, empresa, imageFileName]
+                    [fechaGeneracion, herramienta, empresa, imageData.filename]
                 ]
             });
-    
+
             doc.addImage(base64Img, 'JPEG', 20, 60, 160, 120);
-    
+
             const imageHeight = 120;
             const imageStartY = 60;
             const tableStartY = imageStartY + imageHeight + 10;
-    
+
             doc.autoTable({
                 startY: tableStartY,
                 head: [['Clase', 'Confianza', 'Box_X1', 'Box_Y1', 'Box_X2', 'Box_Y2']],
                 body: tableData,
             });
         }
-    
+
         doc.save('REPORTE DE VALIDACIÓN DE CONSISTENCIA.pdf');
     });
     

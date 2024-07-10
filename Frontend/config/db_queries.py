@@ -16,7 +16,7 @@ def authenticate_user(email, password):
     :returns: A dictionary with user's first name and last name if authenticated, otherwise None.
     :rtype: dict or None
     """
-    sql = read_sql_file(r'SmartlinkAnalytics\frontend\config\data\login_valid.sql')
+    sql = read_sql_file(r'C:\IA\SmartlinkAnalytics-web\SmartlinkAnalytics\Frontend\config\data\login_valid.sql')
 
     with conn_db() as conn:
         cur = conn.cursor()
@@ -35,7 +35,7 @@ def check_email_exists(email):
     :returns: True if the email exists, False otherwise.
     :rtype: bool
     """
-    sql = read_sql_file(r'SmartlinkAnalytics\frontend\config\data\verify_user.sql')
+    sql = read_sql_file(r'C:\IA\SmartlinkAnalytics-web\SmartlinkAnalytics\Frontend\config\data\verify_user.sql')
 
     with conn_db() as conn:
         cur = conn.cursor()
@@ -58,7 +58,7 @@ def register_new_user(first_name, last_name, email, password):
     :rtype: bool
     """
     try:
-        sql = read_sql_file(r'SmartlinkAnalytics\frontend\config\data\insert_user.sql')
+        sql = read_sql_file(r'C:\IA\SmartlinkAnalytics-web\SmartlinkAnalytics\Frontend\config\data\insert_user.sql')
 
         with conn_db() as conn:
             cur = conn.cursor()
