@@ -42,6 +42,9 @@ export function initializeImageGallery(url, herramienta) {
     sendButton.addEventListener('click', async (event) => {
         event.preventDefault();
 
+        // Mostrar loader
+        document.querySelector('.container_loader').style.display = 'flex';
+
         // Obtener imágenes únicas seleccionadas
         const uniqueImages = Array.from(new Set(allSelectedImages.map(image => image.name)));
         const formData = new FormData();
@@ -61,7 +64,6 @@ export function initializeImageGallery(url, herramienta) {
                 console.log('Files uploaded successfully');
                 processedImages = await response.json();
                 displayProcessedImages(processedImages);
-                alert('Imágenes enviadas y procesadas correctamente.');
             } else {
                 console.error('Failed to upload files');
                 alert('Hubo un problema al enviar las imágenes.');
@@ -69,8 +71,12 @@ export function initializeImageGallery(url, herramienta) {
         } catch (error) {
             console.error('Error uploading files', error);
             alert('Error al enviar las imágenes:', error);
+        } finally {
+            // Ocultar loader después de recibir la respuesta
+            document.querySelector('.container_loader').style.display = 'none';
         }
     });
+
 
     // Función para mostrar las imágenes procesadas
     function displayProcessedImages(images) {
