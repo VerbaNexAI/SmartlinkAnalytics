@@ -6,7 +6,6 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    /* backdrop-filter: blur(2px); */
 }
 
 /* Estilos del header */
@@ -82,7 +81,6 @@ body {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
-    border: none;
     box-sizing: border-box;
     background: none;
     border: 1px solid #ffffff;
@@ -103,7 +101,6 @@ input::placeholder {
     padding: 10px 20px;
     background: none;
     color: white;
-    border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
