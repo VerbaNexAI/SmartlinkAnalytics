@@ -4,13 +4,14 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  backdrop-filter: blur(5px);
 }
 
 body {
     font-family: Arial, sans-serif;
     height: 100vh;
     margin: 0;
-    background: linear-gradient(rgba(1, 55, 112, 0.838), rgba(2, 62, 127, 0.904)), url('../image/imagen\ \(21\).png');
+    background: linear-gradient(rgba(1, 55, 112, 0.838), rgba(2, 62, 127, 0.904)), url('../image/FONDO\ CORPORATIVO\ 5\ 1.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -21,7 +22,7 @@ body {
     background-color: rgba(255, 255, 255, 0);
     color: #0b0c53;
     padding: 10px 3%;
-
+    height: 100%;
     box-sizing: border-box;
 }
 .header-container{

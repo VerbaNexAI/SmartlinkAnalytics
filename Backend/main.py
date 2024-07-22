@@ -101,10 +101,15 @@ async def post_project_content(projects: ProjectContent) -> List[dict]:
             combinado = []
 
             for original, seleccionado in zip(data, lista_resultado):
+                if 'score' in original:
+                    original['score'] = round(float(original['score']), 5)
+                    original['score'] = format(original['score'], '.2%')
                 if original['label'] == 'LABEL_0':
                     original['descripcion'] = "Consistent"
                 elif original['label'] == 'LABEL_1':
                     original['Description'] = 'Inconsistent Property Value'
+                elif original['label'] == 'LABEL_2':
+                    original['Description'] = 'Unattached Requiered Connect Point'
                 combinado.append({**original, **seleccionado})
 
             logging.info(f"Combined result: {combinado}")
@@ -118,6 +123,7 @@ async def post_project_content(projects: ProjectContent) -> List[dict]:
     except Exception as e:
         logging.error(f"An unexpected error occurred: {str(e)}")
         raise HTTPException(status_code=500, detail="An unexpected error occurred")
+
 
 @app.post("/upload-image-sel", response_class=JSONResponse)
 async def upload_images_sel(files: List[UploadFile] = File(...)):
