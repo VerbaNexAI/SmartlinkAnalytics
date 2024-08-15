@@ -222,4 +222,45 @@ export function initializeImageGallery(url, herramienta) {
             }
         });
     }
+    function downloadImagesAsZip() {
+        const thumbnailsDiv = document.getElementById('thumbnails_response');
+        const images = thumbnailsDiv.getElementsByTagName('img');
+        const zip = new JSZip();
+    
+        let imagePromises = [];
+    
+        for (let i = 0; i < images.length; i++) {
+            let img = images[i];
+            let imageUrl = img.src;
+            let imageName = `image${i + 1}.jpg`; // Cambia la extensión según corresponda
+    
+            imagePromises.push(
+                fetch(imageUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Error fetching image: ${response.statusText}`);
+                        }
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        return blob.arrayBuffer();  // Convertimos el Blob a un ArrayBuffer
+                    })
+                    .then(arrayBuffer => {
+                        zip.file(imageName, arrayBuffer);  // Añadimos el ArrayBuffer al ZIP
+                    })
+                    .catch(error => {
+                        console.error(`Failed to fetch image ${imageUrl}: ${error}`);
+                    })
+            );
+        }
+    
+        Promise.all(imagePromises).then(() => {
+            zip.generateAsync({ type: 'blob' }).then(function(content) {
+                saveAs(content, 'images.zip');
+            });
+        });
+    }
+    
+    // Llama a la función cuando lo necesites
+    document.getElementById('download_button').addEventListener('click', downloadImagesAsZip);
 }
