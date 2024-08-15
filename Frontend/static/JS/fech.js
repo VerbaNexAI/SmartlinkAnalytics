@@ -53,16 +53,58 @@ const sendPostRequest = (projectName) => {
 };
 
 
-// Renderizar la tabla con los datos recibidos
+
 const renderTable = (data) => {
     // Crear la tabla
-    const table = $('<table>').attr('id', 'example').addClass('table table-striped table-bordered second').css('width', '100%');
+    const table = $('<table>')
+        .attr('id', 'example')
+        .addClass('table table-striped table-bordered second')
+        .css('width', '100%');
 
     // Cabecera de la tabla
     const headerRow = $('<thead>').appendTo(table);
     const headerCells = $('<tr>').appendTo(headerRow);
+
     Object.keys(data[0]).forEach(key => {
-        $('<th>').text(key).appendTo(headerCells);
+        const th = $('<th>').text(key);
+
+        // Establecer texto del tooltip
+        let tooltipText = '';
+        if (key.toLowerCase() === 'score') {
+            tooltipText = 'Texto descriptivo para Score.';
+        } 
+        else if (key.toLowerCase() === 'description') {
+            tooltipText = 'Texto descriptivo para Description.';
+        }
+        else if (key.toLowerCase() === 'sp_modelitemid') {
+            tooltipText = 'Texto descriptivo para SP_ModelItemID.';
+        }
+        else if (key.toLowerCase() === 'path') {
+            tooltipText = 'Texto descriptivo para Path.';
+        }
+        else if (key.toLowerCase() === 'drawing_name') {
+            tooltipText = 'Texto descriptivo para Drawing_Name.';
+        }
+        else if (key.toLowerCase() === 'isapproved') {
+            tooltipText = 'Texto descriptivo para IsApproved.';
+        }
+        else if (key.toLowerCase() === 'inconsistencystatus') {
+            tooltipText = 'Texto descriptivo para InconsistencyStatus.';
+        }
+        else if (key.toLowerCase() === 'severity') {
+            tooltipText = 'Texto descriptivo para Severity.';
+        }
+
+        // Si hay texto de tooltip, asignar eventos
+        if (tooltipText) {
+            th.hover(function(event) {
+                showTooltip(event, tooltipText);
+            }, function() {
+                hideTooltip();
+            });
+        }
+
+        th.appendTo(headerCells);
     });
 
     // Cuerpo de la tabla
@@ -90,13 +132,31 @@ const renderTable = (data) => {
     });
 };
 
+// Funciones para mostrar y ocultar el tooltip personalizado
+function showTooltip(event, text) {
+    const tooltip = $('<div>')
+        .addClass('tooltip-custom')
+        .text(text)
+        .css({
+            top: event.pageY + 20,
+            left: event.pageX + 20
+        })
+        .appendTo('body');
+    tooltip.fadeIn('fast');
+}
+
+function hideTooltip() {
+    $('.tooltip-custom').remove();
+}
+
+
 // Renderizar la lista de proyectos activos o inactivos
 const renderProjectsList = (data, element, paginationId) => {
     const items = data.map(item => {
         const listItem = document.createElement('li');
         listItem.textContent = item.name;
         listItem.addEventListener('click', () => {
-            sendPostRequest(item.name); // Enviar solo el nombre del proyecto al hacer clic
+            sendPostRequest(item.name); 
         });
         return listItem;
     });
@@ -128,7 +188,7 @@ const paginate = (items, listElement, paginationId) => {
             const listItem = document.createElement('li');
             listItem.textContent = items[i].textContent;
             listItem.addEventListener('click', () => {
-                sendPostRequest(items[i].textContent); // Enviar solo el nombre del proyecto al hacer clic
+                sendPostRequest(items[i].textContent);
             });
             listElement.appendChild(listItem);
         }

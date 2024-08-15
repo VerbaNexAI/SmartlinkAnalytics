@@ -126,6 +126,7 @@ class SQLTransactions:
         :rtype: List[Dict]
         """
         df = pd.DataFrame(result)
+        df = df.drop(df.columns[-2:], axis=1)
         df['text'] = df.apply(lambda row: ' '.join(f"{key}:{row[key]}" for key in row.keys() if key != 'InconsistencyType'), axis=1)
         df['label'] = df['InconsistencyType'].apply(str)
         data = df[['text', 'label']]

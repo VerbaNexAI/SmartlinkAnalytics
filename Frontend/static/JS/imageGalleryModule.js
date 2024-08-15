@@ -178,35 +178,37 @@ export function initializeImageGallery(url, herramienta) {
     
     
 
- function handleFiles(files) {
-    for (const file of files) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const imgContainer = document.createElement('div');
-            imgContainer.className = 'img-container';
-
-            const img = document.createElement('img');
-            img.src = event.target.result;
-
-            const deleteIcon = document.createElement('i');
-            deleteIcon.className = 'fas fa-times-circle delete-icon';
-            deleteIcon.addEventListener('click', () => {
-                imgContainer.remove();
+    function handleFiles(files) {
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const imgContainer = document.createElement('div');
+                imgContainer.className = 'img-container';
+    
+                const img = document.createElement('img');
+                img.src = event.target.result;
+    
+                const deleteIcon = document.createElement('i');
+                deleteIcon.className = 'fas fa-times-circle delete-icon';
+                deleteIcon.addEventListener('click', () => {
+                    imgContainer.remove();
+                    // Eliminar el archivo de allSelectedImages
+                    allSelectedImages = allSelectedImages.filter(selectedFile => selectedFile !== file);
+                    updateImageSizes();
+                });
+    
+                imgContainer.appendChild(img);
+                imgContainer.appendChild(deleteIcon);
+                gallery.appendChild(imgContainer);
                 updateImageSizes();
-            });
-
-            imgContainer.appendChild(img);
-            imgContainer.appendChild(deleteIcon);
-            gallery.appendChild(imgContainer);
-            updateImageSizes();
-        };
-        reader.readAsDataURL(file);
-        allSelectedImages.push(file);
+            }
+            reader.readAsDataURL(file);
+            allSelectedImages.push(file); // Agregar archivo al registro
+        }
+        container.classList.add('none');
+        galleryContainer.classList.remove('none');
     }
-    container.classList.add('none');
-    galleryContainer.classList.remove('none');
-}
-
     
 
     function updateImageSizes() {

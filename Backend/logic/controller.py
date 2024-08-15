@@ -45,8 +45,7 @@ class Controller(object):
                     raise HTTPException(status_code=400, detail=f"Failed to read image: {file.filename}")
 
                 predictions = model.predict(img)
-                output_img = predictions[0].plot()
-
+                output_img = predictions[0].plot(font_size=25)
                 retval, buffer = cv2.imencode('.jpg', output_img)
                 if not retval:
                     raise HTTPException(status_code=500, detail=f"Failed to encode image: {file.filename}")
@@ -65,6 +64,13 @@ class Controller(object):
                     "Detecciones": detections
                 })
 
+                archivo_a_eliminar = file_path
+                if os.path.exists(archivo_a_eliminar):
+                    os.remove(archivo_a_eliminar)
+                    print("Archivo eliminado con éxito.")
+                else:
+                    print("El archivo no existe.")
+                    
             return JSONResponse(content=processed_images)
         except Exception as e:
             print(f"An error occurred: {str(e)}")

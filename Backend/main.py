@@ -92,11 +92,12 @@ async def post_project_content(projects: ProjectContent) -> List[dict]:
         if projects_info:
             logging.info(f"Projects found: {projects_info}")
             result = sql_trans.get_view_data()
-            data = sql_trans.create_text_label_df(result)
-
+            print(result)
+            data = sql_trans.create_text_label_df(result)   
+           
             df = pd.DataFrame(result)
             df_seleccionado = df[
-                ['SP_Item2ID', 'GraphicOID', 'SP_DrawingID', 'Item1Location', 'IsApproved', 'InconsistencyStatus', 'Severity']]
+                ['SP_ModelItemID', 'Path', 'Drawing_Name', 'IsApproved', 'InconsistencyStatus', 'Severity']]
             lista_resultado = df_seleccionado.to_dict(orient='records')
             combinado = []
 
@@ -136,7 +137,7 @@ async def upload_images_sel(files: List[UploadFile] = File(...)):
     Returns:
         JSONResponse: A JSON response with the result of the upload.
     """
-    model_path = r'config/data/models/model-sel.pt'
+    model_path = r'config/data/models/smart-elec-v2.pt'
     response = controller.upload_images(model_path, files)
     return response
 
@@ -151,7 +152,7 @@ async def upload_image_spi(files: List[UploadFile] = File(...)):
     Returns:
         JSONResponse: A JSON response with the result of the upload.
     """
-    model_path = r'config/data/models/model-spi.pt'
+    model_path = r'config/data/models/smart-spi-v1.pt'
     response = controller.upload_images(model_path, files)
     return response
 
@@ -166,7 +167,7 @@ async def upload_image_s3d_macanica(files: List[UploadFile] = File(...)):
     Returns:
         JSONResponse: A JSON response with the result of the upload.
     """
-    model_path = r'config/data/models/modelo-s3d-mecanica.pt'
+    model_path = r'config/data/models/mec-s3d-v1.pt'
     response = controller.upload_images(model_path, files)
     return response
 
@@ -181,7 +182,7 @@ async def upload_image_s3d_instrumentaltacion(files: List[UploadFile] = File(...
     Returns:
         JSONResponse: A JSON response with the result of the upload.
     """
-    model_path = r'config/data/models/modelo-s3d-ins.pt'
+    model_path = r'config/data/models/ins-s3d-v2.pt'
     response = controller.upload_images(model_path, files)
     return response
 
@@ -196,7 +197,7 @@ async def upload_image_s3d_civil(files: List[UploadFile] = File(...)):
     Returns:
         JSONResponse: A JSON response with the result of the upload.
     """
-    model_path = r'config/data/models/modelo-s3d-civil.pt'
+    model_path = r'config/data/models/civil-s3d-v2.pt'
     response = controller.upload_images(model_path, files)
     return response
 
@@ -211,7 +212,7 @@ async def upload_image_s3d_electrica(files: List[UploadFile] = File(...)):
     Returns:
         JSONResponse: A JSON response with the result of the upload.
     """
-    model_path = r'config/data/models/modelo-s3d-electrica.pt'
+    model_path = r'config/data/models/elec-s3d-v2.pt'
     response = controller.upload_images(model_path, files)
     return response
 
