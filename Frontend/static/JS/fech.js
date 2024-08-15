@@ -71,28 +71,28 @@ const renderTable = (data) => {
         // Establecer texto del tooltip
         let tooltipText = '';
         if (key.toLowerCase() === 'score') {
-            tooltipText = 'Texto descriptivo para Score.';
+            tooltipText = 'Confianza que tiene el modelo ante la inconsistencia detectada.';
         } 
         else if (key.toLowerCase() === 'description') {
-            tooltipText = 'Texto descriptivo para Description.';
+            tooltipText = 'Describe el tipo de inconsistencia detectada.';
         }
         else if (key.toLowerCase() === 'sp_modelitemid') {
-            tooltipText = 'Texto descriptivo para SP_ModelItemID.';
+            tooltipText = 'Identificador único del elemento inconsistente.';
         }
         else if (key.toLowerCase() === 'path') {
-            tooltipText = 'Texto descriptivo para Path.';
+            tooltipText = 'Ruta que describe el área, unidad y diagrama.';
         }
         else if (key.toLowerCase() === 'drawing_name') {
-            tooltipText = 'Texto descriptivo para Drawing_Name.';
+            tooltipText = 'Diagrama donde se encuentra el elemento inconsistente.';
         }
         else if (key.toLowerCase() === 'isapproved') {
-            tooltipText = 'Texto descriptivo para IsApproved.';
+            tooltipText = 'Describe si la inconsistencia ha sido aprobada donde: 1. No aprobado, 2. Aprobado';
         }
         else if (key.toLowerCase() === 'inconsistencystatus') {
             tooltipText = 'Texto descriptivo para InconsistencyStatus.';
         }
         else if (key.toLowerCase() === 'severity') {
-            tooltipText = 'Texto descriptivo para Severity.';
+            tooltipText = 'Nivel de severidad que tiene la inconsistencia en el diagrama.';
         }
 
         // Si hay texto de tooltip, asignar eventos
