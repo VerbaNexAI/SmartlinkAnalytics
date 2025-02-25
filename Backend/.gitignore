@@ -1,0 +1,9 @@
+env
+assets
+models
+uploads
+web.config
+wfastcgi
+__pycache__
+test.env
+/.env
