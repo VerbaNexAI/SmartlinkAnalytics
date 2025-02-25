@@ -45,86 +45,20 @@ def root():
     """
     return {"projects": "Here you can find the projects or SDGs"}
 
-@app.get("/api/project")
-async def get_projects():
+@app.post("/upload-image-spid", response_class=JSONResponse)
+async def upload_images_sel(files: List[UploadFile] = File(...)):
     """
-    Endpoint to get active projects from the database.
-    
-    Returns:
-        list: A list of unique active projects.
-    
-    Raises:
-        HTTPException: If there is an error retrieving the projects.
-    """
-    try:
-        projects = sql_trans.get_active_projects()
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-    unique_projects = []
-    seen_projects = set()
-
-    for project in projects:
-        if project["name"] not in seen_projects:
-            unique_projects.append(project)
-            seen_projects.add(project["name"])
-
-    return unique_projects
-
-@app.post("/api/view")
-async def post_project_content(projects: ProjectContent) -> List[dict]:
-    """
-    Endpoint to post project content and get view data.
+    Endpoint to upload images for the SEL model.
     
     Args:
-        projects (ProjectContent): A Pydantic model containing a list of project names.
+        files (List[UploadFile]): A list of files to upload.
     
     Returns:
-        list: A list of dictionaries with combined project and view data.
-    
-    Raises:
-        HTTPException: If there is an error retrieving or processing the project data.
+        JSONResponse: A JSON response with the result of the upload.
     """
-    try:
-        logging.info(f"Received projects: {projects.projects}")
-        projects_info = [sql_trans.get_project(p) for p in projects.projects]
-
-        if projects_info:
-            logging.info(f"Projects found: {projects_info}")
-            result = sql_trans.get_view_data()
-            print(result)
-            data = sql_trans.create_text_label_df(result)   
-           
-            df = pd.DataFrame(result)
-            df_seleccionado = df[
-                ['SP_ModelItemID', 'Path', 'Drawing_Name', 'IsApproved', 'InconsistencyStatus', 'Severity']]
-            lista_resultado = df_seleccionado.to_dict(orient='records')
-            combinado = []
-
-            for original, seleccionado in zip(data, lista_resultado):
-                if 'score' in original:
-                    original['score'] = round(float(original['score']), 5)
-                    original['score'] = format(original['score'], '.2%')
-                if original['label'] == 'LABEL_0':
-                    original['descripcion'] = "Consistent"
-                elif original['label'] == 'LABEL_1':
-                    original['Description'] = 'Inconsistent Property Value'
-                elif original['label'] == 'LABEL_2':
-                    original['Description'] = 'Unattached Requiered Connect Point'
-                combinado.append({**original, **seleccionado})
-
-            logging.info(f"Combined result: {combinado}")
-            return combinado
-        else:
-            logging.warning(f"Projects not found for: {projects.projects}")
-            raise HTTPException(status_code=404, detail="Projects not found")
-    except HTTPException as http_exc:
-        logging.error(f"HTTP exception occurred: {http_exc.detail}")
-        raise http_exc
-    except Exception as e:
-        logging.error(f"An unexpected error occurred: {str(e)}")
-        raise HTTPException(status_code=500, detail="An unexpected error occurred")
-
+    model_path = r'config/data/models/smart-pid.pt'
+    response = controller.upload_images(model_path, files)
+    return response
 
 @app.post("/upload-image-sel", response_class=JSONResponse)
 async def upload_images_sel(files: List[UploadFile] = File(...)):

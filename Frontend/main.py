@@ -92,7 +92,7 @@ def spid():
     first_name = session_data['first_name']
     last_name = session_data['last_name']
 
-    return render_template('index.html', first_name=first_name, last_name=last_name)
+    return render_template('spid.html', first_name=first_name, last_name=last_name)
 
 @app.route('/sel')
 def sel():

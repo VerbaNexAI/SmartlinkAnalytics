@@ -24,7 +24,7 @@ def authenticate_user(email, password):
         rows = cur.fetchall()
 
         if len(rows) > 0:
-            return {"first_name": rows[0][0], "last_name": rows[0][1]}
+            return {"first_name": rows[0][1], "last_name": rows[0][2]}
         return None
 
 def check_email_exists(email):
