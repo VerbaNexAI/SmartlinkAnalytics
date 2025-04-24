@@ -177,37 +177,93 @@ export function initializeImageGallery(url, herramienta) {
     });
     
     
-
-    function handleFiles(files) {
+    async function handleFiles(files) {
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const imgContainer = document.createElement('div');
-                imgContainer.className = 'img-container';
     
-                const img = document.createElement('img');
-                img.src = event.target.result;
+            if (file.type === "application/pdf") {
+                document.querySelector('.container_loader').style.display = 'flex';
     
-                const deleteIcon = document.createElement('i');
-                deleteIcon.className = 'fas fa-times-circle delete-icon';
-                deleteIcon.addEventListener('click', () => {
-                    imgContainer.remove();
-                    // Eliminar el archivo de allSelectedImages
-                    allSelectedImages = allSelectedImages.filter(selectedFile => selectedFile !== file);
-                    updateImageSizes();
-                });
+                const fileReader = new FileReader();
     
-                imgContainer.appendChild(img);
-                imgContainer.appendChild(deleteIcon);
-                gallery.appendChild(imgContainer);
-                updateImageSizes();
+                fileReader.onload = async function () {
+                    const typedarray = new Uint8Array(this.result);
+                    const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
+    
+                    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                        const page = await pdf.getPage(pageNum);
+    
+                        // Escala para alta resolución
+                        const scale = 3; // Puedes subir a 4 si quieres aún más calidad
+                        const viewport = page.getViewport({ scale });
+    
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+    
+                        // Tamaño dinámico según la página
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+    
+                        // Fondo blanco
+                        context.fillStyle = "#ffffff";
+                        context.fillRect(0, 0, canvas.width, canvas.height);
+    
+                        // Renderiza la página
+                        try {
+                            await page.render({ canvasContext: context, viewport }).promise;
+                        } catch (err) {
+                            console.error(`Error renderizando página ${pageNum}`, err);
+                            continue;
+                        }
+    
+                        const dataUrl = canvas.toDataURL('image/png');
+                        const imageBlob = await (await fetch(dataUrl)).blob();
+                        const imageFile = new File([imageBlob], `${file.name}_page${pageNum}.png`, { type: 'image/png' });
+    
+                        mostrarImagenEnGaleria(dataUrl, imageFile);
+                    }
+    
+                    document.querySelector('.container_loader').style.display = 'none';
+                };
+    
+                fileReader.readAsArrayBuffer(file);
+    
+            } else if (file.type.startsWith("image/")) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    mostrarImagenEnGaleria(event.target.result, file);
+                };
+                reader.readAsDataURL(file);
             }
-            reader.readAsDataURL(file);
-            allSelectedImages.push(file); // Agregar archivo al registro
         }
+    
         container.classList.add('none');
         galleryContainer.classList.remove('none');
+    }
+    
+    
+    
+
+    function mostrarImagenEnGaleria(dataUrl, file) {
+        const imgContainer = document.createElement('div');
+        imgContainer.className = 'img-container';
+    
+        const img = document.createElement('img');
+        img.src = dataUrl;
+    
+        const deleteIcon = document.createElement('i');
+        deleteIcon.className = 'fas fa-times-circle delete-icon';
+        deleteIcon.addEventListener('click', () => {
+            imgContainer.remove();
+            allSelectedImages = allSelectedImages.filter(selectedFile => selectedFile !== file);
+            updateImageSizes();
+        });
+    
+        imgContainer.appendChild(img);
+        imgContainer.appendChild(deleteIcon);
+        gallery.appendChild(imgContainer);
+        allSelectedImages.push(file); // Agrega a lista para enviar al backend
+        updateImageSizes();
     }
     
 

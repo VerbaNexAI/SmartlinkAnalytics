@@ -206,6 +206,25 @@ def electrica():
 
     return render_template('electrica.html', first_name=first_name, last_name=last_name)
 
+
+
+
+@app.route('/firmas')
+def firmas():
+    """Route to display the S3D page.
+
+    :returns: The S3D page or redirects to the login page if the user is not logged in.
+    :rtype: str or Response
+    """
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    session_data = session['user']
+    first_name = session_data['first_name']
+    last_name = session_data['last_name']
+
+    return render_template('firmas.html', first_name=first_name, last_name=last_name)
+
 @app.route('/logout')
 def logout():
     """Route to log out the user.

@@ -56,7 +56,7 @@ async def upload_images_sel(files: List[UploadFile] = File(...)):
     Returns:
         JSONResponse: A JSON response with the result of the upload.
     """
-    model_path = r'config/data/models/smart-pid.pt'
+    model_path = r'C:\IA\SmartlinkAnalytics-web\SmartlinkAnalytics\Backend\config\data\models\smart-pid.pt'
     response = controller.upload_images(model_path, files)
     return response
 
@@ -89,6 +89,9 @@ async def upload_image_spi(files: List[UploadFile] = File(...)):
     model_path = r'config/data/models/smart-spi-v1.pt'
     response = controller.upload_images(model_path, files)
     return response
+
+
+
 
 @app.post("/upload-image-s3d-mecanica", response_class=JSONResponse)
 async def upload_image_s3d_macanica(files: List[UploadFile] = File(...)):
@@ -149,6 +152,24 @@ async def upload_image_s3d_electrica(files: List[UploadFile] = File(...)):
     model_path = r'config/data/models/elec-s3d-v2.pt'
     response = controller.upload_images(model_path, files)
     return response
+
+
+
+@app.post("/upload-image-firmas", response_class=JSONResponse)
+async def upload_image_firmas(files: List[UploadFile] = File(...)):
+    """
+    Endpoint to upload images for the S3D Eléctrica model.
+    
+    Args:
+        files (List[UploadFile]): A list of files to upload.
+    
+    Returns:
+        JSONResponse: A JSON response with the result of the upload.
+    """
+    model_path = r'config/data/models/firmas_150.pt'
+    response = controller.upload_images(model_path, files)
+    return response
+
 
 if __name__ == "__main__":
     import uvicorn
